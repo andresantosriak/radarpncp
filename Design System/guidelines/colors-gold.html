@@ -1,0 +1,32 @@
+<!-- @dsCard group="Colors" viewport="700x180" name="Accent — Gold (score / ouro)" subtitle="Highlights, destaque, o 'ouro no pântano' das oportunidades" -->
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../styles.css">
+<style>
+  body { background: var(--surface); padding: 24px; }
+  .scale { display: grid; grid-template-columns: repeat(7, 1fr); gap: 0; border-radius: var(--radius-md); overflow: hidden; box-shadow: var(--shadow-sm); }
+  .sw { height: 60px; display: flex; align-items: flex-end; padding: 6px; }
+  .sw span { font-family: var(--font-mono); font-size: 9px; }
+  .labels { display: flex; gap: 14px; margin-top: 14px; }
+  .chip { font-family: var(--font-mono); font-size: 11px; color: var(--text-muted); display: flex; align-items: center; gap: 7px; }
+  .dot { width: 14px; height: 14px; border-radius: 4px; }
+</style>
+</head>
+<body>
+  <div class="scale">
+    <div class="sw" style="background:var(--gold-50)"><span style="color:rgba(7,18,31,.6)">50</span></div>
+    <div class="sw" style="background:var(--gold-100)"><span style="color:rgba(7,18,31,.6)">100</span></div>
+    <div class="sw" style="background:var(--gold-200)"><span style="color:rgba(7,18,31,.6)">200</span></div>
+    <div class="sw" style="background:var(--gold-300)"><span style="color:rgba(7,18,31,.7)">300</span></div>
+    <div class="sw" style="background:var(--gold-400)"><span style="color:rgba(7,18,31,.7)">400</span></div>
+    <div class="sw" style="background:var(--gold-500)"><span style="color:#fff">500</span></div>
+    <div class="sw" style="background:var(--gold-700)"><span style="color:#fff">700</span></div>
+  </div>
+  <div class="labels">
+    <span class="chip"><span class="dot" style="background:var(--gold-500)"></span>--accent · gold-500 (light)</span>
+    <span class="chip"><span class="dot" style="background:var(--gold-300)"></span>--accent (dark) · gold-300</span>
+  </div>
+</body>
+</html>

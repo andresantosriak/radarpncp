@@ -1,0 +1,12 @@
+/* ============================================================
+   Radar PNCP — Global stylesheet entry.
+   Ported verbatim from the Radar PNCP Design System (tokens),
+   plus the app UI-kit layout styles. Consumers import only this.
+   ============================================================ */
+@import './tokens/fonts.css';
+@import './tokens/colors.css';
+@import './tokens/typography.css';
+@import './tokens/spacing.css';
+@import './tokens/effects.css';
+@import './tokens/base.css';
+@import './kit.css';

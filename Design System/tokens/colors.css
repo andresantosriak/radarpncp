@@ -1,0 +1,206 @@
+/* ============================================================
+   Radar PNCP — Color System
+   A "command-center radar" palette: deep navy ground, a bright
+   teal "radar sweep" as the brand signal, gold for scores
+   ("ouro no pântano"), blue for info, and a full semantic set.
+
+   Two themes:
+     :root                  → Light (SaaS limpo, default)
+     [data-theme="dark"]    → Dark (radar / centro de comando)
+   Put data-theme="dark" on any wrapper (or <html>) to flip.
+   ============================================================ */
+
+:root {
+  /* ---- Brand raw scale: Teal (radar sweep) ---- */
+  --teal-50:  #e6fbf4;
+  --teal-100: #c2f4e3;
+  --teal-200: #8fe9cd;
+  --teal-300: #54d9b1;
+  --teal-400: #25c497;
+  --teal-500: #0fa97e;   /* brand primary on light */
+  --teal-600: #0a8a67;
+  --teal-700: #0a6e53;
+  --teal-800: #0c5743;
+  --teal-900: #0c4536;
+  --teal-glow: #1fd1a3;  /* the bright sweep accent for dark UI */
+
+  /* ---- Gold (score / destaque / "ouro") ---- */
+  --gold-50:  #fdf7e3;
+  --gold-100: #faecb9;
+  --gold-200: #f6dc83;
+  --gold-300: #f2c94c;
+  --gold-400: #e9b521;
+  --gold-500: #d99a00;   /* gold on light */
+  --gold-600: #b07c00;
+  --gold-700: #875f06;
+
+  /* ---- Blue (info / link / dado) ---- */
+  --blue-50:  #eaf3ff;
+  --blue-100: #cfe2ff;
+  --blue-200: #a6c8ff;
+  --blue-300: #6ea6ff;
+  --blue-400: #3b82f6;
+  --blue-500: #2563eb;
+  --blue-600: #1d4fc4;
+  --blue-700: #1a3f96;
+
+  /* ---- Semantic raw ---- */
+  --red-100:  #fde2e1;
+  --red-400:  #f87171;
+  --red-500:  #e23b3b;
+  --red-600:  #c42a2a;
+  --amber-100:#fdedcf;
+  --amber-400:#f5b340;
+  --amber-500:#e08a00;
+  --green-100:#d6f6e6;
+  --green-400:#34d399;
+  --green-500:#12a065;
+
+  /* ---- Ink / Navy neutrals (cool, slight green-blue) ---- */
+  --ink-950: #07121f;
+  --ink-900: #0b1c2d;
+  --ink-800: #102739;
+  --ink-700: #1a3346;
+  --ink-600: #2c465a;
+  --ink-500: #486274;
+  --ink-400: #6c8593;
+  --ink-300: #97abb6;
+  --ink-200: #c2d0d7;
+  --ink-150: #d8e2e6;
+  --ink-100: #e7eef0;
+  --ink-50:  #f3f7f7;
+  --ink-25:  #f8fbfb;
+  --white:   #ffffff;
+
+  /* ===========================================================
+     SEMANTIC TOKENS — Light theme (default)
+     =========================================================== */
+
+  /* Surfaces & background */
+  --bg-app:        var(--ink-25);
+  --bg-subtle:     var(--ink-50);
+  --surface:       var(--white);
+  --surface-raised:var(--white);
+  --surface-sunken:var(--ink-50);
+  --surface-inverse: var(--ink-900);
+  --overlay-scrim: rgba(7, 18, 31, 0.45);
+
+  /* Text */
+  --text-strong:   var(--ink-950);
+  --text-body:     var(--ink-800);
+  --text-muted:    var(--ink-500);
+  --text-subtle:   var(--ink-400);
+  --text-inverse:  var(--ink-25);
+  --text-on-brand: var(--white);
+
+  /* Borders & lines */
+  --border:        var(--ink-150);
+  --border-strong: var(--ink-200);
+  --border-subtle: var(--ink-100);
+  --ring:          color-mix(in oklab, var(--teal-500) 45%, transparent);
+
+  /* Brand */
+  --brand:         var(--teal-500);
+  --brand-hover:   var(--teal-600);
+  --brand-press:   var(--teal-700);
+  --brand-soft:    var(--teal-50);
+  --brand-soft-fg: var(--teal-700);
+  --brand-contrast:var(--white);
+
+  /* Accent / gold */
+  --accent:        var(--gold-500);
+  --accent-soft:   var(--gold-50);
+  --accent-soft-fg:var(--gold-700);
+
+  /* Info */
+  --info:          var(--blue-500);
+  --info-soft:     var(--blue-50);
+  --info-soft-fg:  var(--blue-700);
+
+  /* Status */
+  --success:       var(--green-500);
+  --success-soft:  var(--green-100);
+  --success-fg:    #0a6e44;
+  --warning:       var(--amber-500);
+  --warning-soft:  var(--amber-100);
+  --warning-fg:    #8a5400;
+  --danger:        var(--red-500);
+  --danger-soft:   var(--red-100);
+  --danger-fg:     var(--red-600);
+
+  /* Score bands (aderência 0-100) */
+  --score-low:     var(--red-500);    /* 0-39  baixa */
+  --score-mid:     var(--amber-500);  /* 40-69 possível */
+  --score-good:    var(--teal-500);   /* 70-84 boa */
+  --score-strong:  var(--green-500);  /* 85-100 muito forte */
+  --score-track:   var(--ink-100);
+
+  /* Radar decorative */
+  --radar-sweep:   var(--teal-500);
+  --radar-grid:    var(--ink-150);
+  --radar-blip:    var(--gold-500);
+
+  color-scheme: light;
+}
+
+/* ===========================================================
+   SEMANTIC TOKENS — Dark theme (radar / centro de comando)
+   =========================================================== */
+[data-theme="dark"] {
+  --bg-app:        var(--ink-950);
+  --bg-subtle:     var(--ink-900);
+  --surface:       var(--ink-900);
+  --surface-raised:var(--ink-800);
+  --surface-sunken:var(--ink-950);
+  --surface-inverse: var(--ink-50);
+  --overlay-scrim: rgba(3, 9, 16, 0.66);
+
+  --text-strong:   #eef5f3;
+  --text-body:     #cfe0db;
+  --text-muted:    var(--ink-300);
+  --text-subtle:   var(--ink-400);
+  --text-inverse:  var(--ink-950);
+  --text-on-brand: var(--ink-950);
+
+  --border:        color-mix(in oklab, var(--teal-glow) 14%, var(--ink-700));
+  --border-strong: var(--ink-600);
+  --border-subtle: color-mix(in oklab, var(--teal-glow) 8%, var(--ink-800));
+  --ring:          color-mix(in oklab, var(--teal-glow) 60%, transparent);
+
+  --brand:         var(--teal-glow);
+  --brand-hover:   var(--teal-300);
+  --brand-press:   var(--teal-400);
+  --brand-soft:    color-mix(in oklab, var(--teal-glow) 16%, var(--ink-900));
+  --brand-soft-fg: var(--teal-200);
+  --brand-contrast:var(--ink-950);
+
+  --accent:        var(--gold-300);
+  --accent-soft:   color-mix(in oklab, var(--gold-300) 18%, var(--ink-900));
+  --accent-soft-fg:var(--gold-200);
+
+  --info:          var(--blue-300);
+  --info-soft:     color-mix(in oklab, var(--blue-400) 18%, var(--ink-900));
+  --info-soft-fg:  var(--blue-200);
+
+  --success:       var(--green-400);
+  --success-soft:  color-mix(in oklab, var(--green-400) 16%, var(--ink-900));
+  --success-fg:    #8ff0c4;
+  --warning:       var(--amber-400);
+  --warning-soft:  color-mix(in oklab, var(--amber-400) 16%, var(--ink-900));
+  --warning-fg:    var(--gold-200);
+  --danger:        var(--red-400);
+  --danger-soft:   color-mix(in oklab, var(--red-400) 18%, var(--ink-900));
+  --danger-fg:     #ffb3b0;
+
+  --score-low:     var(--red-400);
+  --score-mid:     var(--amber-400);
+  --score-good:    var(--teal-glow);
+  --score-strong:  var(--green-400);
+  --score-track:   var(--ink-700);
+
+  --radar-sweep:   var(--teal-glow);
+  --radar-grid:    color-mix(in oklab, var(--teal-glow) 22%, var(--ink-800));
+  --radar-blip:    var(--gold-300);
+
+  color-scheme: dark;
+}

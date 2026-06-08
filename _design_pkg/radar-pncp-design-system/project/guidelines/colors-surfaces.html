@@ -1,0 +1,41 @@
+<!-- @dsCard group="Colors" viewport="700x260" name="Surfaces — Light & Dark" subtitle="Both themes side by side. Add data-theme='dark' to flip." -->
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../styles.css">
+<style>
+  html, body { margin: 0; }
+  .split { display: grid; grid-template-columns: 1fr 1fr; min-height: 260px; }
+  .pane { padding: 22px; display: flex; flex-direction: column; gap: 12px; background: var(--bg-app); }
+  .tag { font-family: var(--font-mono); font-size: 10px; letter-spacing: var(--tracking-caps); text-transform: uppercase; color: var(--text-subtle); }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 14px 16px; box-shadow: var(--shadow-md); display: flex; flex-direction: column; gap: 6px; }
+  .h { color: var(--text-strong); font-weight: 700; font-size: 15px; }
+  .m { color: var(--text-muted); font-size: 12px; }
+  .pill { align-self: flex-start; background: var(--brand-soft); color: var(--brand-soft-fg); font-weight: 600; font-size: 11px; padding: 3px 10px; border-radius: var(--radius-pill); white-space: nowrap; }
+  .score { font-family: var(--font-mono); font-weight: 600; font-size: 28px; color: var(--score-strong); }
+</style>
+</head>
+<body>
+  <div class="split">
+    <div class="pane">
+      <span class="tag">Light · SaaS</span>
+      <div class="card">
+        <span class="pill">Forte aderência</span>
+        <span class="h">Atendimento digital — Pref. de Sobral</span>
+        <span class="m">Dispensa eletrônica · R$ 62.000 · prazo 14/06</span>
+        <span class="score">87<span style="color:var(--text-subtle);font-size:15px">/100</span></span>
+      </div>
+    </div>
+    <div class="pane" data-theme="dark">
+      <span class="tag">Dark · Centro de comando</span>
+      <div class="card">
+        <span class="pill">Forte aderência</span>
+        <span class="h">Atendimento digital — Pref. de Sobral</span>
+        <span class="m">Dispensa eletrônica · R$ 62.000 · prazo 14/06</span>
+        <span class="score">87<span style="color:var(--text-subtle);font-size:15px">/100</span></span>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

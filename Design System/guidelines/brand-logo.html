@@ -1,0 +1,49 @@
+<!-- @dsCard group="Brand" viewport="700x260" name="Logo lockup" subtitle="Radar mark + wordmark, on light and dark" -->
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../styles.css">
+<style>
+  html, body { margin: 0; }
+  .split { display: grid; grid-template-columns: 1fr 1fr; min-height: 260px; }
+  .pane { background: var(--bg-app); display: flex; align-items: center; justify-content: center; }
+  .lockup { display: flex; align-items: center; gap: 14px; }
+  .wm { display: flex; flex-direction: column; line-height: 1; }
+  .wm .top { display: flex; align-items: baseline; gap: 7px; }
+  .wm .radar { font-size: 26px; font-weight: 800; letter-spacing: -0.02em; color: var(--text-strong); }
+  .wm .pncp { font-family: var(--font-mono); font-size: 13px; font-weight: 600; letter-spacing: 0.12em; color: var(--brand); background: var(--brand-soft); padding: 3px 7px; border-radius: var(--radius-sm); }
+  .wm .by { margin-top: 6px; font-size: 10.5px; letter-spacing: 0.04em; color: var(--text-subtle); text-transform: uppercase; }
+</style>
+</head>
+<body>
+  <div class="split">
+    <div class="pane">
+      <div class="lockup">
+        <svg width="52" height="52" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="24" cy="24" r="21" stroke="var(--brand)" stroke-width="2"/>
+          <circle cx="24" cy="24" r="13.5" stroke="var(--brand)" stroke-opacity="0.35" stroke-width="1.5"/>
+          <circle cx="24" cy="24" r="6" stroke="var(--brand)" stroke-opacity="0.35" stroke-width="1.5"/>
+          <line x1="24" y1="24" x2="24" y2="3" stroke="var(--brand)" stroke-width="2" stroke-linecap="round"/>
+          <circle cx="35" cy="14" r="3.4" fill="var(--accent)"/>
+          <circle cx="35" cy="14" r="6.5" fill="var(--accent)" fill-opacity="0.22"/>
+        </svg>
+        <div class="wm"><div class="top"><span class="radar">Radar</span><span class="pncp">PNCP</span></div><span class="by">AI Solution Exp</span></div>
+      </div>
+    </div>
+    <div class="pane" data-theme="dark">
+      <div class="lockup">
+        <svg width="52" height="52" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="24" cy="24" r="21" stroke="var(--brand)" stroke-width="2"/>
+          <circle cx="24" cy="24" r="13.5" stroke="var(--brand)" stroke-opacity="0.35" stroke-width="1.5"/>
+          <circle cx="24" cy="24" r="6" stroke="var(--brand)" stroke-opacity="0.35" stroke-width="1.5"/>
+          <line x1="24" y1="24" x2="24" y2="3" stroke="var(--brand)" stroke-width="2" stroke-linecap="round"/>
+          <circle cx="35" cy="14" r="3.4" fill="var(--accent)"/>
+          <circle cx="35" cy="14" r="6.5" fill="var(--accent)" fill-opacity="0.22"/>
+        </svg>
+        <div class="wm"><div class="top"><span class="radar">Radar</span><span class="pncp">PNCP</span></div><span class="by">AI Solution Exp</span></div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

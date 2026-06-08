@@ -1,0 +1,32 @@
+<!-- @dsCard group="Colors" viewport="700x180" name="Score bands — Aderência 0–100" subtitle="The core decision color logic of the radar" -->
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../styles.css">
+<style>
+  body { background: var(--surface); padding: 26px 28px; }
+  .bar { display: flex; height: 18px; border-radius: var(--radius-pill); overflow: hidden; }
+  .bar div { flex: 1; }
+  .legend { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 18px; }
+  .item { display: flex; flex-direction: column; gap: 3px; }
+  .rng { font-family: var(--font-mono); font-size: 18px; font-weight: 600; }
+  .lbl { font-size: 12px; color: var(--text-muted); }
+  .tick { width: 26px; height: 4px; border-radius: 2px; margin-bottom: 4px; }
+</style>
+</head>
+<body>
+  <div class="bar">
+    <div style="background:var(--score-low)"></div>
+    <div style="background:var(--score-mid)"></div>
+    <div style="background:var(--score-good)"></div>
+    <div style="background:var(--score-strong)"></div>
+  </div>
+  <div class="legend">
+    <div class="item"><span class="tick" style="background:var(--score-low)"></span><span class="rng" style="color:var(--score-low)">0–39</span><span class="lbl">Baixa aderência</span></div>
+    <div class="item"><span class="tick" style="background:var(--score-mid)"></span><span class="rng" style="color:var(--score-mid)">40–69</span><span class="lbl">Possível, exige análise</span></div>
+    <div class="item"><span class="tick" style="background:var(--score-good)"></span><span class="rng" style="color:var(--score-good)">70–84</span><span class="lbl">Boa oportunidade</span></div>
+    <div class="item"><span class="tick" style="background:var(--score-strong)"></span><span class="rng" style="color:var(--score-strong)">85–100</span><span class="lbl">Muito forte</span></div>
+  </div>
+</body>
+</html>

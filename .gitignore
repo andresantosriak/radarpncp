@@ -1,0 +1,14 @@
+# Env
+.env
+.env.*
+*.local
+
+# Dependencies
+node_modules/
+
+# Build
+dist/
+*.tsbuildinfo
+
+# OS
+.DS_Store

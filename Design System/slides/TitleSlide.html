@@ -1,0 +1,48 @@
+<!-- @dsCard group="Slides" viewport="1280x720" name="Slide — Capa" subtitle="Título do deck com motivo de radar" -->
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../styles.css">
+<link rel="stylesheet" href="slides.css">
+<style>
+  html, body { margin: 0; }
+  .scope { position: absolute; right: -160px; top: 50%; transform: translateY(-50%); width: 620px; height: 620px; }
+  .scope .ring { position: absolute; inset: 0; border: 1px solid var(--radar-grid); border-radius: 50%; }
+  .scope .ring.r2 { inset: 18%; } .scope .ring.r3 { inset: 36%; } .scope .ring.r4 { inset: 54%; }
+  .scope .sweep { position: absolute; inset: 0; border-radius: 50%; overflow: hidden;
+    background: conic-gradient(from 200deg, color-mix(in oklab, var(--radar-sweep) 42%, transparent), transparent 70deg, transparent 360deg); }
+  .scope .blip { position: absolute; width: 16px; height: 16px; border-radius: 50%; background: var(--radar-blip); box-shadow: var(--glow-gold); }
+  .scope .b1 { left: 62%; top: 30%; } .scope .b2 { left: 40%; top: 60%; width: 10px; height: 10px; }
+</style>
+</head>
+<body data-theme="dark">
+<div class="slide">
+  <div class="scope">
+    <div class="ring"></div><div class="ring r2"></div><div class="ring r3"></div><div class="ring r4"></div>
+    <div class="sweep"></div>
+    <div class="blip b1"></div><div class="blip b2"></div>
+  </div>
+  <div class="slide-pad">
+    <div class="slide-logo">
+      <svg width="40" height="40" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="24" cy="24" r="21" stroke="var(--brand)" stroke-width="2"/>
+        <circle cx="24" cy="24" r="13.5" stroke="var(--brand)" stroke-opacity="0.35" stroke-width="1.5"/>
+        <circle cx="24" cy="24" r="6" stroke="var(--brand)" stroke-opacity="0.35" stroke-width="1.5"/>
+        <line x1="24" y1="24" x2="24" y2="3" stroke="var(--brand)" stroke-width="2" stroke-linecap="round"/>
+        <circle cx="35" cy="14" r="3.4" fill="var(--accent)"/><circle cx="35" cy="14" r="6.5" fill="var(--accent)" fill-opacity="0.22"/>
+      </svg>
+      <div class="wm"><span class="radar">Radar</span><span class="pncp">PNCP</span></div>
+    </div>
+    <div style="margin-top:auto; max-width:760px;">
+      <div class="eyebrow-lg"><i data-lucide="radar"></i>Radar de licitações com IA</div>
+      <h1 style="margin-top:22px;">Ache a licitação<br>certa antes da<br>concorrência.</h1>
+      <p class="lead" style="margin-top:24px;">Monitoramos o PNCP todos os dias, cruzamos cada edital com o que a sua empresa faz e entregamos um painel com as melhores oportunidades — com score, riscos e proposta sugerida.</p>
+    </div>
+  </div>
+  <div class="slide-foot"><span>AI Solution Exp · CNPJ 53.075.641/0001-71</span><span>radarpncp.ai</span></div>
+</div>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<script>lucide.createIcons();</script>
+</body>
+</html>

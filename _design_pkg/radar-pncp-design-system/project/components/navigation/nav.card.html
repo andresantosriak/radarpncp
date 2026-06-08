@@ -1,0 +1,48 @@
+<!-- @dsCard group="Components" viewport="700x230" name="Navigation — Tabs" subtitle="Underline tabs with count pills · pill segmented" -->
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../../styles.css">
+<style>
+  body { background: var(--bg-app); padding: 24px; margin: 0; }
+  .block { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 18px 20px; margin-bottom: 16px; }
+  .label { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--text-subtle); font-weight: 600; margin-bottom: 12px; }
+</style>
+</head>
+<body>
+  <div id="root"></div>
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <script src="../../_ds_bundle.js"></script>
+  <script type="text/babel">
+    const { Icon, Tabs } = window.RadarPNCPDesignSystem_ba9943;
+    function Demo() {
+      return (
+        <div>
+          <div className="block">
+            <div className="label">Underline · filtros do radar</div>
+            <Tabs defaultValue="melhores" items={[
+              { value: 'melhores', label: 'Melhores', count: 12 },
+              { value: 'urgentes', label: 'Urgentes', icon: <Icon name="alarm-clock" />, count: 6 },
+              { value: 'ia', label: 'IA / chatbot', count: 9 },
+              { value: 'descartados', label: 'Descartados' },
+            ]} />
+          </div>
+          <div className="block">
+            <div className="label">Pill · seções do edital</div>
+            <Tabs variant="pill" defaultValue="resumo" items={[
+              { value: 'resumo', label: 'Resumo' },
+              { value: 'docs', label: 'Documentos' },
+              { value: 'custos', label: 'Custos' },
+            ]} />
+          </div>
+        </div>
+      );
+    }
+    ReactDOM.createRoot(document.getElementById('root')).render(<Demo />);
+  </script>
+</body>
+</html>

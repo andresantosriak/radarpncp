@@ -1,0 +1,25 @@
+<!-- @dsCard group="Type" viewport="700x250" name="Mono & numerals" subtitle="IBM Plex Mono — scores, valores, datas, IDs (tabular)" -->
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../styles.css">
+<style>
+  body { background: var(--surface); padding: 26px 32px; font-family: var(--font-mono); }
+  .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px 40px; }
+  .item { display: flex; flex-direction: column; gap: 4px; }
+  .k { font-family: var(--font-sans); font-size: 11px; text-transform: uppercase; letter-spacing: var(--tracking-caps); color: var(--text-subtle); }
+  .v { font-variant-numeric: tabular-nums; color: var(--text-strong); font-weight: 600; }
+</style>
+</head>
+<body>
+  <div class="grid">
+    <div class="item"><span class="k">Score</span><span class="v" style="font-size:32px;color:var(--score-strong)">87<span style="color:var(--text-subtle);font-size:16px">/100</span></span></div>
+    <div class="item"><span class="k">Valor estimado</span><span class="v" style="font-size:24px">R$ 62.000,00</span></div>
+    <div class="item"><span class="k">Prazo limite</span><span class="v" style="font-size:24px">14/06/2026</span></div>
+    <div class="item"><span class="k">Margem prevista</span><span class="v" style="font-size:24px;color:var(--success)">35%</span></div>
+    <div class="item"><span class="k">ID PNCP</span><span class="v" style="font-size:18px;color:var(--text-muted)">53075641000171-1-000418/2026</span></div>
+    <div class="item"><span class="k">Modalidade</span><span class="v" style="font-size:18px;color:var(--text-muted)">Dispensa eletrônica</span></div>
+  </div>
+</body>
+</html>

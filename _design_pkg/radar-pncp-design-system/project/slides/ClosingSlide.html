@@ -1,0 +1,37 @@
+<!-- @dsCard group="Slides" viewport="1280x720" name="Slide — Encerramento" subtitle="CTA final com a marca" -->
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../styles.css">
+<link rel="stylesheet" href="slides.css">
+<style>
+  html, body { margin: 0; }
+  .center { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 26px; }
+  .cta { display: inline-flex; align-items: center; gap: 10px; background: var(--brand); color: var(--brand-contrast); font-weight: 700; font-size: 19px; padding: 16px 28px; border-radius: var(--radius-md); }
+  .cta svg { width: 20px; height: 20px; }
+  .scope2 { position: absolute; left: 50%; top: 46%; transform: translate(-50%,-50%); width: 760px; height: 760px; opacity: 0.5; }
+  .scope2 .ring { position: absolute; inset: 0; border: 1px solid var(--radar-grid); border-radius: 50%; }
+  .scope2 .ring.r2 { inset: 22%; } .scope2 .ring.r3 { inset: 44%; }
+</style>
+</head>
+<body data-theme="dark">
+<div class="slide">
+  <div class="scope2"><div class="ring"></div><div class="ring r2"></div><div class="ring r3"></div></div>
+  <div class="slide-pad center">
+    <svg width="56" height="56" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="24" cy="24" r="21" stroke="var(--brand)" stroke-width="2"/>
+      <circle cx="24" cy="24" r="13.5" stroke="var(--brand)" stroke-opacity="0.35" stroke-width="1.5"/>
+      <line x1="24" y1="24" x2="24" y2="3" stroke="var(--brand)" stroke-width="2" stroke-linecap="round"/>
+      <circle cx="35" cy="14" r="3.6" fill="var(--accent)"/><circle cx="35" cy="14" r="7" fill="var(--accent)" fill-opacity="0.22"/>
+    </svg>
+    <h1 style="font-size:58px; max-width:900px;">Um radar de ouro no meio do pântano burocrático.</h1>
+    <p class="lead" style="text-align:center;">Pare de perder edital por não ter visto a tempo. Deixe a IA vigiar o PNCP por você.</p>
+    <div class="cta"><i data-lucide="radar"></i>Analisar minha primeira oportunidade</div>
+  </div>
+  <div class="slide-foot"><span>AI Solution Exp · 53.075.641/0001-71</span><span>radarpncp.ai</span></div>
+</div>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<script>lucide.createIcons();</script>
+</body>
+</html>
