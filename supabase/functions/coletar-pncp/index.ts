@@ -112,6 +112,44 @@ Deno.serve(async (req) => {
     const analisar = Number(url.searchParams.get('analisar') ?? body.analisar ?? 0)
 
     const supabase = createClient(SUPABASE_URL, SERVICE_KEY)
+
+    // keywords: fonte de verdade é a tabela `keywords` (ativo=true)
+    let activeKeywords: string[] = DEFAULT_KEYWORDS
+    let keywordsSource: 'db' | 'fallback' = 'fallback'
+    try {
+      const { data: kwRows, error: kwErr } = await supabase
+        .from('keywords')
+        .select('termo')
+        .eq('ativo', true)
+        .order('termo')
+      if (!kwErr && kwRows && kwRows.length > 0) {
+        activeKeywords = kwRows.map((r: { termo: string }) => r.termo)
+        keywordsSource = 'db'
+      }
+    } catch (_) {
+      // fallback silencioso — usa DEFAULT_KEYWORDS
+    }
+
+    // perfil da empresa: fonte de verdade é a tabela `empresa_perfil`
+    let activePerfil: string = PERFIL
+    let perfilSource: 'db' | 'fallback' = 'fallback'
+    try {
+      const { data: perfilRows, error: perfilErr } = await supabase
+        .from('empresa_perfil')
+        .select('portfolio_texto')
+        .eq('id', '00000000-0000-0000-0000-000000000001')
+        .limit(1)
+      if (!perfilErr && perfilRows && perfilRows.length > 0) {
+        const txt = (perfilRows[0] as { portfolio_texto: string }).portfolio_texto
+        if (txt && txt.trim().length > 0) {
+          activePerfil = txt.trim()
+          perfilSource = 'db'
+        }
+      }
+    } catch (_) {
+      // fallback silencioso — usa const PERFIL
+    }
+
     const raw = await scanPncp(dias, paginas)
 
     // dedupe por controle
@@ -129,7 +167,7 @@ Deno.serve(async (req) => {
     let objEmbs: number[][] = []
     if (semantico && OPENAI_API_KEY) {
       try {
-        ;[profEmb] = await embed([PERFIL])
+        ;[profEmb] = await embed([activePerfil])
         objEmbs = await embed(editais.map((e) => String(e.objetoCompra ?? '')))
       } catch (_) {
         profEmb = null
@@ -146,7 +184,7 @@ Deno.serve(async (req) => {
         sem = semScore(cosine(profEmb, objEmbs[i]))
         emb = objEmbs[i]
       }
-      const kw = matchesKeywords(objeto, DEFAULT_KEYWORDS)
+      const kw = matchesKeywords(objeto, activeKeywords)
       // oportunidade se: aderência por palavra-chave OU forte similaridade semântica
       const isOpp = (ad && kw) || (sem !== null && sem >= 62)
       if (!isOpp) return
@@ -226,6 +264,9 @@ Deno.serve(async (req) => {
       upserted,
       semantico,
       analisados,
+      keywordsSource,
+      keywordsCount: activeKeywords.length,
+      perfilSource,
       params: { dias, paginas, modalidades: MODALIDADES },
     })
   } catch (e) {

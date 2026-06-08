@@ -1,5 +1,7 @@
 // Radar PNCP — scoring de aderência (porta Deno do src/lib de frontend).
 // Usado pelo coletor server-side. Mesma lógica calibrada do app.
+// FALLBACK — fonte de verdade é a tabela `keywords` no Supabase.
+// DEFAULT_KEYWORDS aqui é usada apenas quando o coletor não consegue ler a tabela.
 
 export interface WeightedTerm {
   term: string

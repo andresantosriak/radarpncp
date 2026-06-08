@@ -6,6 +6,8 @@
  * SCORING_TERMS: weighted, pre-normalized terms used to compute aderência.
  * CORE_TERMS: the strong-signal terms that justify a high (forte) score. */
 
+// FALLBACK — fonte de verdade é a tabela `keywords` no Supabase.
+// Esta lista é usada apenas quando o banco não está disponível.
 // Vocabulário monitorado. Inclui o nicho-alvo (chatbot, IA…) MAS também os
 // termos como editais públicos realmente são escritos (sistema, licença de
 // software, informática…) — senão o radar quase não acha nada, porque órgãos

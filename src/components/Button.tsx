@@ -12,9 +12,10 @@ export interface ButtonProps {
   onClick?: (e: MouseEvent<HTMLButtonElement>) => void
   children?: ReactNode
   style?: CSSProperties
+  disabled?: boolean
 }
 
-export function Button({ variant = 'primary', size = 'md', iconLeft, onClick, children, style }: ButtonProps) {
+export function Button({ variant = 'primary', size = 'md', iconLeft, onClick, children, style, disabled }: ButtonProps) {
   const base: CSSProperties = {
     display: 'inline-flex',
     alignItems: 'center',
@@ -40,8 +41,9 @@ export function Button({ variant = 'primary', size = 'md', iconLeft, onClick, ch
   return (
     <button
       onClick={onClick}
-      style={{ ...base, ...v, ...style }}
-      onMouseDown={(e) => (e.currentTarget.style.transform = 'scale(0.98)')}
+      disabled={disabled}
+      style={{ ...base, ...v, ...style, ...(disabled ? { opacity: 0.55, cursor: 'not-allowed' } : {}) }}
+      onMouseDown={(e) => !disabled && (e.currentTarget.style.transform = 'scale(0.98)')}
       onMouseUp={(e) => (e.currentTarget.style.transform = '')}
       onMouseLeave={(e) => (e.currentTarget.style.transform = '')}
     >

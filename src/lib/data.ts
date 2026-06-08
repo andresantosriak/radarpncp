@@ -1,6 +1,9 @@
 // Fake edital data for the Radar PNCP UI kit (recreation only).
 import type { Empresa, Edital, RadarData } from './types'
 
+// FALLBACK: fonte de verdade é a tabela `empresa_perfil` no Supabase.
+// Este objeto é usado como fallback pelo hook useEmpresaPerfil quando o
+// banco não responde ou a tabela está vazia.
 export const empresa: Empresa = {
   nome: 'AI Solution Exp LTDA - ME',
   cnpj: '53.075.641/0001-71',
