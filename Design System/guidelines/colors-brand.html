@@ -1,0 +1,37 @@
+<!-- @dsCard group="Colors" viewport="700x210" name="Brand — Teal (radar sweep)" subtitle="Primary signal. --brand on light = teal-500, dark = teal-glow" -->
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../styles.css">
+<style>
+  body { background: var(--surface); padding: 24px; }
+  .scale { display: grid; grid-template-columns: repeat(10, 1fr); gap: 0; border-radius: var(--radius-md); overflow: hidden; box-shadow: var(--shadow-sm); }
+  .sw { height: 64px; display: flex; align-items: flex-end; padding: 6px; }
+  .sw span { font-family: var(--font-mono); font-size: 9px; color: rgba(255,255,255,.85); }
+  .sw.dark span { color: rgba(7,18,31,.7); }
+  .labels { display: flex; gap: 10px; margin-top: 16px; flex-wrap: wrap; }
+  .chip { font-family: var(--font-mono); font-size: 11px; color: var(--text-muted); display: flex; align-items: center; gap: 7px; }
+  .dot { width: 14px; height: 14px; border-radius: 4px; }
+</style>
+</head>
+<body>
+  <div class="scale">
+    <div class="sw" style="background:var(--teal-50)"><span style="color:rgba(7,18,31,.6)">50</span></div>
+    <div class="sw" style="background:var(--teal-100)"><span style="color:rgba(7,18,31,.6)">100</span></div>
+    <div class="sw" style="background:var(--teal-200)"><span style="color:rgba(7,18,31,.6)">200</span></div>
+    <div class="sw" style="background:var(--teal-300)"><span style="color:rgba(7,18,31,.7)">300</span></div>
+    <div class="sw" style="background:var(--teal-400)"><span>400</span></div>
+    <div class="sw" style="background:var(--teal-500)"><span>500</span></div>
+    <div class="sw" style="background:var(--teal-600)"><span>600</span></div>
+    <div class="sw" style="background:var(--teal-700)"><span>700</span></div>
+    <div class="sw" style="background:var(--teal-800)"><span>800</span></div>
+    <div class="sw" style="background:var(--teal-900)"><span>900</span></div>
+  </div>
+  <div class="labels">
+    <span class="chip"><span class="dot" style="background:var(--teal-500)"></span>--brand · teal-500</span>
+    <span class="chip"><span class="dot" style="background:var(--teal-glow)"></span>--teal-glow · #1fd1a3 (sweep no dark)</span>
+    <span class="chip"><span class="dot" style="background:var(--teal-50);border:1px solid var(--border)"></span>--brand-soft</span>
+  </div>
+</body>
+</html>

@@ -1,0 +1,57 @@
+<!-- @dsCard group="Slides" viewport="1280x720" name="Slide — Oportunidade" subtitle="Showcase do output: score, recomendação e proposta" -->
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../styles.css">
+<link rel="stylesheet" href="slides.css">
+<style>
+  html, body { margin: 0; }
+  .opp-wrap { display: grid; grid-template-columns: 360px 1fr; gap: 56px; margin-top: 52px; align-items: center; }
+  .gpanel { display: flex; flex-direction: column; align-items: center; gap: 18px; }
+  .gpanel .rec { font-size: 20px; font-weight: 800; letter-spacing: 0.04em; text-transform: uppercase; color: var(--score-strong); }
+  .gpanel .pill { background: var(--success-soft); color: var(--success-fg); font-weight: 700; font-size: 15px; padding: 6px 14px; border-radius: 999px; white-space: nowrap; }
+  .det h2 { font-size: 38px; line-height: 1.1; }
+  .org { font-size: 18px; color: var(--text-muted); margin-top: 12px; display: flex; align-items: center; gap: 8px; }
+  .kvs { margin-top: 26px; display: grid; grid-template-columns: 1fr 1fr; gap: 16px 40px; }
+  .kvs .row { display: flex; flex-direction: column; gap: 3px; }
+  .kvs .k { font-size: 14px; color: var(--text-subtle); text-transform: uppercase; letter-spacing: 0.06em; }
+  .kvs .v { font-family: var(--font-mono); font-size: 24px; font-weight: 600; color: var(--text-strong); }
+  .prop { margin-top: 24px; background: var(--brand-soft); border: 1px solid color-mix(in oklab, var(--brand) 30%, transparent); border-radius: var(--radius-lg); padding: 18px 22px; display: inline-flex; flex-direction: column; }
+  .prop .k { font-size: 13px; text-transform: uppercase; letter-spacing: 0.07em; color: var(--brand-soft-fg); font-weight: 700; }
+  .prop .v { font-family: var(--font-mono); font-size: 28px; font-weight: 600; color: var(--text-strong); }
+</style>
+</head>
+<body data-theme="dark">
+<div class="slide">
+  <div class="slide-pad">
+    <div class="eyebrow-lg"><i data-lucide="sparkles"></i>O que o painel entrega</div>
+    <div class="opp-wrap">
+      <div class="gpanel">
+        <svg width="220" height="220" viewBox="0 0 160 160" style="transform:rotate(-90deg)">
+          <circle cx="80" cy="80" r="70" fill="none" stroke="var(--score-track)" stroke-width="13"/>
+          <circle cx="80" cy="80" r="70" fill="none" stroke="var(--score-strong)" stroke-width="13" stroke-linecap="round" stroke-dasharray="439.8" stroke-dashoffset="57.2"/>
+          <text x="80" y="80" dominant-baseline="central" text-anchor="middle" transform="rotate(90 80 80)" font-family="var(--font-mono)" font-weight="600" font-size="56" fill="var(--text-strong)">87</text>
+        </svg>
+        <span class="pill">Forte aderência</span>
+        <span class="rec">Participar</span>
+      </div>
+      <div class="det">
+        <h2>Plataforma de atendimento digital com chatbot e IA</h2>
+        <div class="org"><i data-lucide="landmark"></i>Prefeitura de Sobral · Sobral/CE · Dispensa eletrônica</div>
+        <div class="kvs">
+          <div class="row"><span class="k">Valor estimado</span><span class="v">R$ 62.000</span></div>
+          <div class="row"><span class="k">Prazo final</span><span class="v" style="color:var(--warning-fg)">14/06/2026</span></div>
+          <div class="row"><span class="k">Risco jurídico</span><span class="v">Baixo</span></div>
+          <div class="row"><span class="k">Chance de vitória</span><span class="v" style="color:var(--success)">Alta</span></div>
+        </div>
+        <div class="prop"><span class="k">Proposta recomendada</span><span class="v">R$ 48.000 – 54.000</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-foot"><span>AI Solution Exp</span><span>04 / 06</span></div>
+</div>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<script>lucide.createIcons();</script>
+</body>
+</html>

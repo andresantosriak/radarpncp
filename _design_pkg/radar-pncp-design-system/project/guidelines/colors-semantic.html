@@ -1,0 +1,24 @@
+<!-- @dsCard group="Colors" viewport="700x200" name="Semantic — Status" subtitle="Success, warning, danger, info — solid + soft pairs" -->
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../styles.css">
+<style>
+  body { background: var(--surface); padding: 24px; }
+  .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+  .col { display: flex; flex-direction: column; gap: 8px; }
+  .solid { height: 56px; border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 700; font-size: 13px; }
+  .soft { height: 34px; border-radius: var(--radius-sm); display: flex; align-items: center; padding: 0 12px; font-size: 12px; font-weight: 600; }
+  .name { font-family: var(--font-mono); font-size: 10px; color: var(--text-subtle); }
+</style>
+</head>
+<body>
+  <div class="grid">
+    <div class="col"><div class="solid" style="background:var(--success)">Forte</div><div class="soft" style="background:var(--success-soft);color:var(--success-fg)">Recomendado</div><span class="name">--success</span></div>
+    <div class="col"><div class="solid" style="background:var(--warning)">Analisar</div><div class="soft" style="background:var(--warning-soft);color:var(--warning-fg)">Possível</div><span class="name">--warning</span></div>
+    <div class="col"><div class="solid" style="background:var(--danger)">Risco</div><div class="soft" style="background:var(--danger-soft);color:var(--danger-fg)">Descartado</div><span class="name">--danger</span></div>
+    <div class="col"><div class="solid" style="background:var(--info)">Info</div><div class="soft" style="background:var(--info-soft);color:var(--info-soft-fg)">Novo edital</div><span class="name">--info</span></div>
+  </div>
+</body>
+</html>

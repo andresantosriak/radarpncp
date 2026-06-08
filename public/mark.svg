@@ -1,0 +1,15 @@
+<svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Radar PNCP">
+  <defs>
+    <linearGradient id="sweep" x1="24" y1="24" x2="44" y2="9" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#0fa97e" stop-opacity="0.55"></stop>
+      <stop offset="1" stop-color="#0fa97e" stop-opacity="0"></stop>
+    </linearGradient>
+  </defs>
+  <circle cx="24" cy="24" r="21" stroke="#0fa97e" stroke-opacity="0.9" stroke-width="2"></circle>
+  <circle cx="24" cy="24" r="13.5" stroke="#0fa97e" stroke-opacity="0.35" stroke-width="1.5"></circle>
+  <circle cx="24" cy="24" r="6" stroke="#0fa97e" stroke-opacity="0.35" stroke-width="1.5"></circle>
+  <path d="M24 24 L24 3 A21 21 0 0 1 41.8 13.5 Z" fill="url(#sweep)"></path>
+  <line x1="24" y1="24" x2="24" y2="3" stroke="#0fa97e" stroke-width="2" stroke-linecap="round"></line>
+  <circle cx="35" cy="14" r="3.4" fill="#d99a00"></circle>
+  <circle cx="35" cy="14" r="6" fill="#d99a00" fill-opacity="0.22"></circle>
+</svg>

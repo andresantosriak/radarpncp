@@ -1,0 +1,35 @@
+<!-- @dsCard group="Brand" viewport="700x300" name="Radar motif" subtitle="The signature sweep — empty states, loading, hero decoration" -->
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../styles.css">
+<style>
+  html, body { margin: 0; }
+  body { background: var(--ink-950); display: flex; align-items: center; justify-content: center; min-height: 300px; }
+  .scope { position: relative; width: 220px; height: 220px; }
+  .ring { position: absolute; inset: 0; border: 1px solid var(--radar-grid); border-radius: 50%; }
+  .ring.r2 { inset: 26%; } .ring.r3 { inset: 52%; }
+  .cross, .cross::before { position: absolute; background: var(--radar-grid); }
+  .cross { left: 50%; top: 0; width: 1px; height: 100%; transform: translateX(-0.5px); }
+  .cross::before { content: ''; left: -110px; top: 50%; width: 220px; height: 1px; }
+  .sweep { position: absolute; inset: 0; border-radius: 50%; overflow: hidden;
+    background: conic-gradient(from 0deg, color-mix(in oklab, var(--radar-sweep) 55%, transparent), transparent 70deg, transparent 360deg);
+    animation: spin var(--dur-radar) linear infinite; }
+  .blip { position: absolute; width: 12px; height: 12px; border-radius: 50%; background: var(--radar-blip);
+    box-shadow: var(--glow-gold); }
+  .blip.b1 { left: 70%; top: 28%; } .blip.b2 { left: 33%; top: 64%; width: 8px; height: 8px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  @media (prefers-reduced-motion: reduce) { .sweep { animation: none; } }
+</style>
+</head>
+<body>
+  <div class="scope">
+    <div class="ring"></div><div class="ring r2"></div><div class="ring r3"></div>
+    <div class="cross"></div>
+    <div class="sweep"></div>
+    <div class="blip b1"></div>
+    <div class="blip b2"></div>
+  </div>
+</body>
+</html>

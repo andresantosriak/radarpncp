@@ -1,0 +1,21 @@
+<!-- @dsCard group="Spacing" viewport="700x190" name="Elevation / shadows" subtitle="Soft layered shadows — xs … xl" -->
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../styles.css">
+<style>
+  body { background: var(--bg-subtle); padding: 30px 26px; display: flex; gap: 26px; align-items: center; flex-wrap: wrap; }
+  .item { display: flex; flex-direction: column; gap: 10px; align-items: center; }
+  .box { width: 92px; height: 64px; background: var(--surface); border-radius: var(--radius-lg); }
+  .name { font-family: var(--font-mono); font-size: 11px; color: var(--text-muted); }
+</style>
+</head>
+<body>
+  <div class="item"><div class="box" style="box-shadow:var(--shadow-xs)"></div><span class="name">xs</span></div>
+  <div class="item"><div class="box" style="box-shadow:var(--shadow-sm)"></div><span class="name">sm</span></div>
+  <div class="item"><div class="box" style="box-shadow:var(--shadow-md)"></div><span class="name">md</span></div>
+  <div class="item"><div class="box" style="box-shadow:var(--shadow-lg)"></div><span class="name">lg</span></div>
+  <div class="item"><div class="box" style="box-shadow:var(--shadow-xl)"></div><span class="name">xl</span></div>
+</body>
+</html>

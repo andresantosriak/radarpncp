@@ -1,0 +1,46 @@
+<!-- @dsCard group="Components" viewport="700x440" name="Forms — input, select, checkbox, switch" subtitle="Input · Select · Checkbox · Radio · Switch" -->
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../../styles.css">
+<style>
+  body { background: var(--bg-app); padding: 24px; margin: 0; }
+  .wrap { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 22px; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .stack { display: flex; flex-direction: column; gap: 16px; }
+  .label { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--text-subtle); font-weight: 600; }
+</style>
+</head>
+<body>
+  <div id="root"></div>
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <script src="../../_ds_bundle.js"></script>
+  <script type="text/babel">
+    const { Icon, Input, Select, Checkbox, Switch } = window.RadarPNCPDesignSystem_ba9943;
+    function Demo() {
+      return (
+        <div className="wrap">
+          <div className="stack">
+            <Input label="Buscar editais" placeholder="palavra-chave, órgão, objeto…" iconLeft={<Icon name="search" />} />
+            <Select label="Modalidade" options={['Todas','Dispensa eletrônica','Pregão eletrônico','Concorrência']} />
+            <Input label="CNPJ" error="CNPJ inválido" defaultValue="53.075.641/0001-71" />
+          </div>
+          <div className="stack">
+            <span className="label">Filtros</span>
+            <Checkbox label="Apenas editais com IA / chatbot" defaultChecked />
+            <Checkbox label="Acima de R$ 50 mil" description="Oportunidades de maior valor" />
+            <span className="label" style={{marginTop:4}}>Canal de alerta</span>
+            <Checkbox type="radio" name="c" label="WhatsApp" defaultChecked />
+            <Checkbox type="radio" name="c" label="E-mail" />
+            <Switch label="Monitoramento diário do PNCP" defaultChecked />
+          </div>
+        </div>
+      );
+    }
+    ReactDOM.createRoot(document.getElementById('root')).render(<Demo />);
+  </script>
+</body>
+</html>

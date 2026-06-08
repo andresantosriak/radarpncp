@@ -1,0 +1,31 @@
+<!-- @dsCard group="Colors" viewport="700x210" name="Ink — Neutrals" subtitle="Cool navy-grey ramp for text, borders & surfaces" -->
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../styles.css">
+<style>
+  body { background: var(--surface); padding: 24px; }
+  .scale { display: grid; grid-template-columns: repeat(11, 1fr); gap: 0; border-radius: var(--radius-md); overflow: hidden; box-shadow: var(--shadow-sm); }
+  .sw { height: 66px; display: flex; align-items: flex-end; padding: 5px; }
+  .sw span { font-family: var(--font-mono); font-size: 8.5px; }
+  .note { margin-top: 14px; font-family: var(--font-mono); font-size: 11px; color: var(--text-muted); }
+</style>
+</head>
+<body>
+  <div class="scale">
+    <div class="sw" style="background:var(--ink-25)"><span style="color:rgba(7,18,31,.55)">25</span></div>
+    <div class="sw" style="background:var(--ink-50)"><span style="color:rgba(7,18,31,.55)">50</span></div>
+    <div class="sw" style="background:var(--ink-100)"><span style="color:rgba(7,18,31,.55)">100</span></div>
+    <div class="sw" style="background:var(--ink-200)"><span style="color:rgba(7,18,31,.6)">200</span></div>
+    <div class="sw" style="background:var(--ink-300)"><span style="color:rgba(7,18,31,.7)">300</span></div>
+    <div class="sw" style="background:var(--ink-400)"><span style="color:#fff">400</span></div>
+    <div class="sw" style="background:var(--ink-500)"><span style="color:#fff">500</span></div>
+    <div class="sw" style="background:var(--ink-600)"><span style="color:#fff">600</span></div>
+    <div class="sw" style="background:var(--ink-700)"><span style="color:#fff">700</span></div>
+    <div class="sw" style="background:var(--ink-800)"><span style="color:#fff">800</span></div>
+    <div class="sw" style="background:var(--ink-950)"><span style="color:#fff">950</span></div>
+  </div>
+  <div class="note">--text-strong 950 · --text-body 800 · --text-muted 500 · --border 150 · --bg-app 25</div>
+</body>
+</html>

@@ -1,0 +1,24 @@
+<!-- @dsCard group="Type" viewport="700x260" name="Body & UI text" subtitle="Reading sizes, muted hierarchy, links" -->
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../styles.css">
+<style>
+  body { background: var(--surface); padding: 28px 32px; }
+  .row { display: flex; align-items: baseline; gap: 16px; padding: 7px 0; }
+  .spec { font-family: var(--font-mono); font-size: 11px; color: var(--text-subtle); width: 120px; flex: none; }
+  .b { color: var(--text-body); }
+  .strong { color: var(--text-strong); font-weight: var(--fw-semibold); }
+  .muted { color: var(--text-muted); }
+  .subtle { color: var(--text-subtle); }
+</style>
+</head>
+<body>
+  <div class="row"><span class="spec">md · 16</span><span class="b" style="font-size:var(--text-md)">Objeto compatível com automação, IA e atendimento digital.</span></div>
+  <div class="row"><span class="spec">base · 15</span><span class="b" style="font-size:var(--text-base)">Texto padrão da interface — claro, humano e direto ao ponto.</span></div>
+  <div class="row"><span class="spec">sm · 13</span><span class="muted" style="font-size:var(--text-sm)">Linha de apoio em tabelas densas e metadados secundários.</span></div>
+  <div class="row"><span class="spec">xs · 12</span><span class="subtle" style="font-size:var(--text-xs)">Publicado em 02/06/2026 · Dispensa eletrônica · Fortaleza/CE</span></div>
+  <div class="row"><span class="spec">link</span><span style="font-size:var(--text-base)"><a href="#">Ver edital no PNCP →</a></span></div>
+</body>
+</html>

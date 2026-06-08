@@ -1,0 +1,74 @@
+<!-- @dsCard group="Components" viewport="700x460" name="Core — buttons, badges, tags, card" subtitle="Button · IconButton · Badge · Tag · Avatar · Card" -->
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../../styles.css">
+<style>
+  body { background: var(--bg-app); padding: 24px; margin: 0; }
+  .demo { display: flex; flex-direction: column; gap: 18px; }
+  .group { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+  .label { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--text-subtle); font-weight: 600; margin-bottom: 8px; }
+  .block { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 16px; }
+</style>
+</head>
+<body>
+  <div id="root"></div>
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <script src="../../_ds_bundle.js"></script>
+  <script type="text/babel">
+    const { Button, IconButton, Badge, Tag, Avatar, Card } = window.RadarPNCPDesignSystem_ba9943;
+    function Demo() {
+      return (
+        <div className="demo">
+          <div className="block">
+            <div className="label">Buttons</div>
+            <div className="group">
+              <Button variant="primary" iconLeft={<Icon name="radar" />}>Analisar oportunidade</Button>
+              <Button variant="secondary">Ver edital</Button>
+              <Button variant="ghost">Descartar</Button>
+              <Button variant="danger" size="sm">Excluir</Button>
+              <Button variant="primary" loading>Salvando</Button>
+            </div>
+          </div>
+          <div className="block">
+            <div className="label">Icon buttons · Avatars</div>
+            <div className="group">
+              <IconButton label="Filtrar" variant="outline"><Icon name="sliders-horizontal" /></IconButton>
+              <IconButton label="Favoritar" active><Icon name="star" /></IconButton>
+              <IconButton label="Buscar" variant="solid"><Icon name="search" /></IconButton>
+              <span style={{width:12}}></span>
+              <Avatar name="Marina Alves" />
+              <Avatar name="Prefeitura de Sobral" shape="square" tone="neutral" />
+              <Avatar name="AI Solution" tone="gold" />
+            </div>
+          </div>
+          <div className="block">
+            <div className="label">Badges · Tags</div>
+            <div className="group" style={{marginBottom:12}}>
+              <Badge tone="success" dot>Forte aderência</Badge>
+              <Badge tone="warning">Analisar</Badge>
+              <Badge tone="danger">Descartado</Badge>
+              <Badge tone="gold" solid>Urgente</Badge>
+              <Badge tone="neutral">Dispensa eletrônica</Badge>
+            </div>
+            <div className="group">
+              <Tag selected onClick={()=>{}}>inteligência artificial</Tag>
+              <Tag onClick={()=>{}}>chatbot</Tag>
+              <Tag onRemove={()=>{}}>automação</Tag>
+            </div>
+          </div>
+          <Card title="Resumo da oportunidade" subtitle="Gerado pela IA · há 2h" accent
+            action={<IconButton label="Opções" size="sm"><Icon name="more-horizontal" /></IconButton>}>
+            <p style={{margin:0,fontSize:14,color:'var(--text-body)'}}>O órgão quer contratar uma plataforma de atendimento digital com chatbot e integração via API — objeto fortemente compatível com a AI Solution.</p>
+          </Card>
+        </div>
+      );
+    }
+    ReactDOM.createRoot(document.getElementById('root')).render(<Demo />);
+  </script>
+</body>
+</html>
