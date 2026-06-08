@@ -1,13 +1,20 @@
 /* Radar PNCP — App shell: sidebar + topbar chrome, client-side routing, theme
  * toggle (dark = command-center default), and live PNCP data with graceful demo
  * fallback. Holds the persisted state (palavras-chave, alertas, descartados) and
- * the search query, and wires them into the screens. */
-import { useEffect, useMemo, useState, type ReactNode } from 'react'
-import type { Edital, FilterId, Route } from './lib/types'
-import { DEFAULT_KEYWORDS } from './lib/keywords'
+ * the search query, and wires them into the screens.
+ *
+ * New-opportunity toast: when live data loads, we diff against a localStorage
+ * set of already-seen IDs. First load populates the baseline silently; subsequent
+ * loads show a real toast for genuinely new relevant opportunities. */
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
+import type { Edital, Route, SortId, RadarFilters } from './lib/types'
+import { triggerColeta } from './lib/db'
+import type { ToastData } from './components/Toast'
 import { matchesKeywords } from './lib/scoring'
 import { normalize } from './lib/text'
 import { useRadar } from './hooks/useRadar'
+import { useKeywords } from './hooks/useKeywords'
+import { useEmpresaPerfil } from './hooks/useEmpresaPerfil'
 import { useLocalState } from './hooks/useLocalState'
 import { Icon } from './components/Icon'
 import { OpportunityCard } from './components/OpportunityCard'
@@ -39,16 +46,28 @@ function applySearch(list: Edital[], q: string): Edital[] {
 export function App() {
   const [theme, setTheme] = useState<Theme>('dark')
   const [route, setRoute] = useState<Route>('radar')
-  const [filter, setFilter] = useState<FilterId>('todos')
+  const [sort, setSort] = useState<SortId>('recentes')
+  const [radarFilters, setRadarFilters] = useState<RadarFilters>({
+    modalidade: '',
+    estado: '',
+    faixaValor: '',
+    aderencia: '',
+    urgente: null,
+  })
   const [opId, setOpId] = useState<string | null>(null)
   const [dialog, setDialog] = useState(false)
   const [toast, setToast] = useState(false)
+  const [toastData, setToastData] = useState<ToastData | undefined>(undefined)
+  const [coletando, setColetando] = useState(false)
   const [search, setSearch] = useState('')
 
-  // v2: vocabulário ampliado (substitui as 16 palavras antigas salvas no browser)
-  const [keywords, setKeywords] = useLocalState<string[]>('radar.keywords.v2', DEFAULT_KEYWORDS)
+  // keywords: fonte de verdade é a tabela `keywords` no Supabase
+  const { keywords, add: addKw, remove: removeKw } = useKeywords()
+  // perfil da empresa: fonte de verdade é a tabela `empresa_perfil` no Supabase
+  const { perfil, update: perfilUpdate } = useEmpresaPerfil()
   const [alerts, setAlerts] = useLocalState<AlertChannels>('radar.alerts', DEFAULT_ALERTS)
   const [dismissed, setDismissed] = useLocalState<string[]>('radar.dismissed', [])
+  const [seenIds, setSeenIds] = useLocalState<string[]>('radar.seenIds', [])
 
   const { data, isLoading, isFetching, refetch } = useRadar()
   const allEditais = data?.editais ?? []
@@ -70,11 +89,95 @@ export function App() {
     document.documentElement.setAttribute('data-theme', theme)
   }, [theme])
 
+  const showToast = useCallback((d: ToastData) => {
+    setToastData(d)
+    setToast(true)
+  }, [])
+
+  const openOp = useCallback((o: Edital) => {
+    setOpId(o.id)
+    document.getElementById('scrollArea')?.scrollTo(0, 0)
+  }, [])
+
+  // --- New-opportunity detection (live data only) ---
+  // Ref prevents re-firing within the same data identity
+  const lastCheckedRef = useRef<string | null>(null)
+
   useEffect(() => {
-    if (isLoading) return
-    const t = setTimeout(() => setToast(true), 800)
+    if (isLoading || source !== 'live') return
+    // Build a stable fingerprint for this data load
+    const fingerprint = allEditais.map((e) => e.id).join(',')
+    if (fingerprint === lastCheckedRef.current) return
+    lastCheckedRef.current = fingerprint
+
+    // Relevant = not dismissed, status not 'baixa'
+    const relevant = allEditais.filter((e) => e.status !== 'baixa' && !dismissedSet.has(e.id))
+    const currentIds = relevant.map((e) => e.id)
+
+    // First-ever load (no baseline): populate silently
+    if (seenIds.length === 0) {
+      setSeenIds(currentIds)
+      return
+    }
+
+    const seenSet = new Set(seenIds)
+    const newOps = relevant.filter((e) => !seenSet.has(e.id))
+
+    if (newOps.length === 0) {
+      // Still sync: add any new IDs from current load (e.g. after refetch)
+      const merged = Array.from(new Set([...seenIds, ...currentIds]))
+      if (merged.length !== seenIds.length) setSeenIds(merged)
+      return
+    }
+
+    // Pick the best new opportunity (highest score)
+    const best = newOps.reduce((a, b) => (b.score > a.score ? b : a), newOps[0])
+
+    const toastPayload: ToastData =
+      newOps.length === 1
+        ? {
+            title: `Nova oportunidade · score ${best.score}`,
+            message: `${best.objetoCurto} · ${best.valor} · prazo ${best.prazo}`,
+            tone: 'info',
+            onClick: () => openOp(best),
+          }
+        : {
+            title: `${newOps.length} novas oportunidades`,
+            message: `Melhor: ${best.objetoCurto} · score ${best.score}`,
+            tone: 'info',
+            onClick: () => openOp(best),
+          }
+
+    // Show the toast after a short delay for UX
+    const t = setTimeout(() => showToast(toastPayload), 800)
+
+    // Mark as seen
+    setSeenIds((prev) => Array.from(new Set([...prev, ...newOps.map((e) => e.id)])))
+
     return () => clearTimeout(t)
-  }, [isLoading])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isLoading, source, allEditais, dismissedSet])
+
+  const handleColetar = async () => {
+    if (coletando) return
+    setColetando(true)
+    const result = await triggerColeta()
+    setColetando(false)
+    if (!result.ok || result.varridos === 0) {
+      showToast({
+        title: 'PNCP não respondeu agora',
+        message: result.error || 'Limite de acessos atingido. Tente em alguns minutos.',
+        tone: 'warning',
+      })
+      return
+    }
+    await refetch()
+    showToast({
+      title: 'Radar atualizado',
+      message: `${result.varridos ?? 0} editais varridos · ${result.upserted ?? 0} novos gravados`,
+      tone: 'success',
+    })
+  }
 
   // counts (sidebar) — independentes da busca, para estabilidade
   const activeAll = allEditais.filter((e) => !isDismissed(e.id) && e.status !== 'baixa')
@@ -89,16 +192,19 @@ export function App() {
   const activeEditais = searched.filter((e) => !isDismissed(e.id))
   const descartadosEditais = searched.filter((e) => isDismissed(e.id) || e.status === 'baixa')
 
-  const openOp = (o: Edital) => {
-    setOpId(o.id)
-    document.getElementById('scrollArea')?.scrollTo(0, 0)
-  }
-
   const onNav = (id: Route) => {
     setOpId(null)
-    setRoute(id)
-    if (id === 'radar') setFilter('todos')
-    if (id === 'urgentes') setFilter('urgentes')
+    if (id === 'urgentes') {
+      // navigate to radar with urgente filter pre-set
+      setRoute('radar')
+      setRadarFilters({ modalidade: '', estado: '', faixaValor: '', aderencia: '', urgente: true })
+    } else {
+      setRoute(id)
+      if (id === 'radar') {
+        // reset filters when navigating back to radar
+        setRadarFilters({ modalidade: '', estado: '', faixaValor: '', aderencia: '', urgente: null })
+      }
+    }
   }
 
   let crumb: ReactNode
@@ -207,26 +313,34 @@ export function App() {
             <ConfigScreen
               which={route}
               keywords={keywords}
-              onKeywordsChange={setKeywords}
+              onAddKeyword={(t) => addKw.mutate(t)}
+              onRemoveKeyword={(t) => removeKw.mutate(t)}
               alerts={alerts}
               onAlertsChange={setAlerts}
+              perfil={perfil}
+              perfilUpdate={perfilUpdate}
+              onToast={showToast}
             />
           ) : (
             <Dashboard
               editais={activeEditais}
               onOpen={openOp}
-              filter={filter}
-              setFilter={setFilter}
+              sort={sort}
+              setSort={setSort}
+              filters={radarFilters}
+              setFilters={setRadarFilters}
               isLoading={isLoading}
               isFetching={isFetching}
               onRefresh={() => refetch()}
               source={source}
+              coletando={coletando}
+              onColetar={handleColetar}
             />
           )}
         </div>
       </div>
       <ProposalDialog open={dialog} onClose={() => setDialog(false)} op={op} />
-      <Toast show={toast} onClose={() => setToast(false)} />
+      <Toast show={toast} onClose={() => setToast(false)} data={toastData} />
     </div>
   )
 }

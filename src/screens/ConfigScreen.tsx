@@ -1,11 +1,13 @@
 /* Radar PNCP — configuration screens: Palavras-chave (editáveis), Alertas
- * (toggles) e Perfil da empresa. Estado controlado pelo App e persistido. */
-import { useState, type KeyboardEvent } from 'react'
+ * (toggles) e Perfil da empresa (editável, salva no Supabase). */
+import { useState, useEffect, type KeyboardEvent } from 'react'
 import type { ConfigKey } from '../lib/types'
 import type { IconName } from '../components/Icon'
+import type { EmpresaPerfil } from '../hooks/useEmpresaPerfil'
+import type { PerfilRow } from '../lib/perfil-db'
+import type { UseMutationResult } from '@tanstack/react-query'
 import { Icon } from '../components/Icon'
-import { KV } from '../components/KV'
-import { empresa } from '../lib/data'
+import { Button } from '../components/Button'
 import { normalize } from '../lib/text'
 import { CORE_TERMS } from '../lib/keywords'
 
@@ -44,23 +46,66 @@ const isStrong = (k: string) => CORE_TERMS.has(normalize(k).trim())
 export interface ConfigScreenProps {
   which: ConfigKey
   keywords: string[]
-  onKeywordsChange: (keywords: string[]) => void
+  onAddKeyword: (termo: string) => void
+  onRemoveKeyword: (termo: string) => void
   alerts: AlertChannels
   onAlertsChange: (alerts: AlertChannels) => void
+  perfil?: EmpresaPerfil
+  perfilUpdate?: UseMutationResult<void, Error, Partial<PerfilRow>>
+  onToast?: (d: { title: string; message?: string; tone?: 'success' | 'warning' | 'info' }) => void
 }
 
-export function ConfigScreen({ which, keywords, onKeywordsChange, alerts, onAlertsChange }: ConfigScreenProps) {
+export function ConfigScreen({ which, keywords, onAddKeyword, onRemoveKeyword, alerts, onAlertsChange, perfil, perfilUpdate, onToast }: ConfigScreenProps) {
   const meta = META[which]
   const [draft, setDraft] = useState('')
+
+  // empresa form state
+  const [empRazao, setEmpRazao] = useState('')
+  const [empCnpj, setEmpCnpj] = useState('')
+  const [empArea, setEmpArea] = useState('')
+  const [empPortfolio, setEmpPortfolio] = useState('')
+  const [empDirty, setEmpDirty] = useState(false)
+
+  // sync form when perfil loads / changes
+  useEffect(() => {
+    if (perfil) {
+      setEmpRazao(perfil.razaoSocial)
+      setEmpCnpj(perfil.cnpj)
+      setEmpArea(perfil.area)
+      setEmpPortfolio(perfil.portfolioTexto)
+      setEmpDirty(false)
+    }
+  }, [perfil])
+
+  const handleEmpresaChange = (setter: (v: string) => void) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setter(e.target.value)
+    setEmpDirty(true)
+  }
+
+  const handleEmpresaSave = () => {
+    if (!perfilUpdate) return
+    perfilUpdate.mutate(
+      { razao_social: empRazao.trim(), cnpj: empCnpj.trim(), area: empArea.trim(), portfolio_texto: empPortfolio.trim() },
+      {
+        onSuccess: () => {
+          setEmpDirty(false)
+          onToast?.({ title: 'Perfil salvo', message: 'As alterações foram gravadas com sucesso.', tone: 'success' })
+        },
+        onError: () => {
+          onToast?.({ title: 'Erro ao salvar', message: 'Não foi possível atualizar o perfil. Tente novamente.', tone: 'warning' })
+        },
+      },
+    )
+  }
 
   const addTerm = () => {
     const t = draft.trim()
     if (!t) return
     const exists = keywords.some((k) => normalize(k).trim() === normalize(t).trim())
-    if (!exists) onKeywordsChange([...keywords, t])
+    if (!exists) onAddKeyword(t)
     setDraft('')
   }
-  const removeTerm = (k: string) => onKeywordsChange(keywords.filter((x) => x !== k))
+  const removeTerm = (k: string) => onRemoveKeyword(k)
   const onDraftKey = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
       e.preventDefault()
@@ -133,6 +178,7 @@ export function ConfigScreen({ which, keywords, onKeywordsChange, alerts, onAler
               onChange={(e) => setDraft(e.target.value)}
               onKeyDown={onDraftKey}
               placeholder="novo termo"
+              aria-label="Nova palavra-chave"
               style={{
                 border: 0,
                 outline: 'none',
@@ -231,15 +277,95 @@ export function ConfigScreen({ which, keywords, onKeywordsChange, alerts, onAler
             border: '1px solid var(--border)',
             borderRadius: 'var(--radius-xl)',
             padding: 24,
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 16,
           }}
         >
-          <KV k="Razão social" v={empresa.nome} />
-          <KV k="CNPJ" v={empresa.cnpj} />
-          <div className="kv" style={{ borderBottom: 0 }}>
-            <span className="k">Área</span>
-            <span style={{ fontSize: 14, color: 'var(--text-body)', textAlign: 'right', maxWidth: 320 }}>
-              {empresa.area}
+          <label style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+            <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-muted)' }}>Razão social</span>
+            <input
+              value={empRazao}
+              onChange={handleEmpresaChange(setEmpRazao)}
+              style={{
+                border: '1px solid var(--border-strong)',
+                borderRadius: 'var(--radius-md)',
+                padding: '10px 12px',
+                fontSize: 14,
+                fontFamily: 'var(--font-sans)',
+                background: 'var(--bg)',
+                color: 'var(--text-strong)',
+                outline: 'none',
+              }}
+            />
+          </label>
+          <label style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+            <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-muted)' }}>CNPJ</span>
+            <input
+              value={empCnpj}
+              onChange={handleEmpresaChange(setEmpCnpj)}
+              style={{
+                border: '1px solid var(--border-strong)',
+                borderRadius: 'var(--radius-md)',
+                padding: '10px 12px',
+                fontSize: 14,
+                fontFamily: 'var(--font-sans)',
+                background: 'var(--bg)',
+                color: 'var(--text-strong)',
+                outline: 'none',
+              }}
+            />
+          </label>
+          <label style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+            <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-muted)' }}>Área de atuação</span>
+            <input
+              value={empArea}
+              onChange={handleEmpresaChange(setEmpArea)}
+              style={{
+                border: '1px solid var(--border-strong)',
+                borderRadius: 'var(--radius-md)',
+                padding: '10px 12px',
+                fontSize: 14,
+                fontFamily: 'var(--font-sans)',
+                background: 'var(--bg)',
+                color: 'var(--text-strong)',
+                outline: 'none',
+              }}
+            />
+          </label>
+          <label style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+            <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-muted)' }}>Portfólio / Descrição detalhada</span>
+            <span style={{ fontSize: 12, color: 'var(--text-subtle)', lineHeight: 1.4 }}>
+              Esse texto alimenta a precisão do radar — quanto mais detalhado, melhor o cruzamento semântico com os editais do PNCP.
             </span>
+            <textarea
+              value={empPortfolio}
+              onChange={handleEmpresaChange(setEmpPortfolio)}
+              rows={5}
+              style={{
+                border: '1px solid var(--border-strong)',
+                borderRadius: 'var(--radius-md)',
+                padding: '10px 12px',
+                fontSize: 14,
+                fontFamily: 'var(--font-sans)',
+                background: 'var(--bg)',
+                color: 'var(--text-strong)',
+                outline: 'none',
+                resize: 'vertical',
+                lineHeight: 1.5,
+              }}
+            />
+          </label>
+          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
+            <Button
+              variant="primary"
+              size="sm"
+              onClick={handleEmpresaSave}
+              disabled={!empDirty || perfilUpdate?.isPending}
+              iconLeft={<Icon name="check" size={15} />}
+            >
+              {perfilUpdate?.isPending ? 'Salvando…' : 'Salvar'}
+            </Button>
           </div>
         </div>
       )}

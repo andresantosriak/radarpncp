@@ -40,6 +40,10 @@ export interface Edital {
   concorrencia: string
   burocracia: string
   chance: Chance
+  /** Data de publicação ISO (yyyy-mm-dd) — para ordenação confiável. */
+  publicadoISO?: string
+  /** Data de encerramento ISO (yyyy-mm-dd) — para ordenação por prazo. */
+  prazoISO?: string
   /** Link para o edital no portal do PNCP (presente em oportunidades ao vivo). */
   link?: string
   /** Identificadores PNCP para análise por IA (só em oportunidades ao vivo). */
@@ -69,5 +73,14 @@ export type Route =
 /** Configuration sub-screens. */
 export type ConfigKey = 'palavras' | 'alertas' | 'empresa'
 
-/** Dashboard filter tabs. */
-export type FilterId = 'todos' | 'urgentes' | 'ia' | 'alto'
+/** Sort options for the opportunity list. */
+export type SortId = 'recentes' | 'aderencia' | 'valor' | 'prazo'
+
+/** Combinable radar filters. */
+export interface RadarFilters {
+  modalidade: string
+  estado: string
+  faixaValor: string
+  aderencia: string
+  urgente: boolean | null
+}

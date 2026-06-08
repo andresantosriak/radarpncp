@@ -19,3 +19,8 @@
 **Contexto:** analisar todos os editais com LLM custaria caro.
 **Decisão:** o score de aderência é heurístico determinístico; a análise por LLM (lê o PDF) é sob demanda no detalhe e opt-in em lote no coletor (com teto).
 **Escopo:** análise / custo.
+
+### [2026-06-08] Palavras-chave centralizadas na tabela `keywords` (fonte única)
+**Contexto:** a tela "Palavras-chave monitoradas" prometia que o radar busca esses termos, mas o coletor usava a constante hardcoded `DEFAULT_KEYWORDS` e a edição do usuário ficava só em localStorage (filtrava só a exibição) — adicionar termo não trazia nada novo.
+**Decisão:** a tabela Supabase `keywords` (id, termo, ativo, timestamps) é a fonte de verdade. Frontend lê/grava via REST anon (`src/lib/keywords-db.ts` + `useKeywords`); o coletor lê os termos ativos da tabela no início e usa `DEFAULT_KEYWORDS` apenas como fallback (campo `keywordsSource: db|fallback` na resposta). As constantes `DEFAULT_KEYWORDS` permanecem só como fallback/seed. Validado por QA: `keywordsSource: db`, 26 termos no seed.
+**Escopo:** coletor + frontend + schema. RLS: CRUD aberto para `anon` (projeto sem auth) — `TODO[auth]` na migration para restringir escrita se auth for adicionado.

@@ -75,6 +75,8 @@ function rowToEdital(r: Row): Edital {
     modalidade,
     publicado: formatDateISO(r.data_publicacao),
     prazo: r.data_encerramento ? formatDateISO(r.data_encerramento) : '—',
+    publicadoISO: r.data_publicacao?.slice(0, 10) || undefined,
+    prazoISO: r.data_encerramento?.slice(0, 10) || undefined,
     valor: formatBRL(valorNum),
     valorNum,
     score,
@@ -90,10 +92,42 @@ function rowToEdital(r: Row): Edital {
   }
 }
 
+export interface ColetaResult {
+  ok: boolean
+  varridos?: number
+  oportunidades?: number
+  upserted?: number
+  keywordsSource?: string
+  keywordsCount?: number
+  error?: string
+}
+
+/** Dispara a Edge Function coletor-pncp on-demand (varredura leve, sem IA). */
+export async function triggerColeta(): Promise<ColetaResult> {
+  if (!URL || !ANON) return { ok: false, error: 'Supabase não configurado' }
+  try {
+    const res = await fetch(`${URL}/functions/v1/coletar-pncp?dias=7&paginas=3`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        apikey: ANON,
+        Authorization: `Bearer ${ANON}`,
+      },
+      signal: AbortSignal.timeout(60_000),
+    })
+    const data = await res.json().catch(() => ({ ok: false, error: `Resposta inválida (HTTP ${res.status})` }))
+    if (!res.ok) return { ok: false, error: data?.error || `HTTP ${res.status}` }
+    return data as ColetaResult
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : 'Erro de rede'
+    return { ok: false, error: msg.includes('timeout') ? 'Tempo esgotado — tente novamente' : msg }
+  }
+}
+
 export async function fetchOportunidades(signal?: AbortSignal): Promise<Edital[]> {
   if (!URL || !ANON) throw new Error('Supabase não configurado')
   const res = await fetch(
-    `${URL}/rest/v1/oportunidades?select=*&order=score_heuristico.desc.nullslast&limit=300`,
+    `${URL}/rest/v1/oportunidades?select=*&order=data_publicacao.desc.nullslast&limit=300`,
     { headers: { apikey: ANON, Authorization: `Bearer ${ANON}` }, signal },
   )
   if (!res.ok) throw new Error(`DB HTTP ${res.status}`)
