@@ -27,6 +27,7 @@ export const editais: Edital[] = [
     score: 87,
     status: 'forte',
     urgente: true,
+    encerrado: false,
     recomendacao:
       'Participar — objeto fortemente compatível com automação, IA e atendimento digital.',
     tags: ['chatbot', 'IA', 'atendimento digital', 'API'],
@@ -80,6 +81,7 @@ export const editais: Edital[] = [
     score: 79,
     status: 'boa',
     urgente: false,
+    encerrado: false,
     recomendacao:
       'Participar com parceiro — escopo técnico forte, mas exige atestado de grande porte.',
     tags: ['assistente virtual', 'IA', 'integração de sistemas'],
@@ -129,6 +131,7 @@ export const editais: Edital[] = [
     score: 72,
     status: 'boa',
     urgente: true,
+    encerrado: false,
     recomendacao:
       'Analisar — bom encaixe técnico, valor um pouco baixo para o escopo.',
     tags: ['dashboard', 'BI', 'transformação digital'],
@@ -173,6 +176,7 @@ export const editais: Edital[] = [
     score: 64,
     status: 'possivel',
     urgente: false,
+    encerrado: false,
     recomendacao:
       'Analisar com cautela — exige certificações que ainda não temos.',
     tags: ['SaaS', 'automação', 'workflow'],
@@ -218,6 +222,7 @@ export const editais: Edital[] = [
     score: 12,
     status: 'baixa',
     urgente: false,
+    encerrado: false,
     recomendacao:
       'Descartar — objeto sem relação com o portfólio da AI Solution.',
     tags: ['facilities'],

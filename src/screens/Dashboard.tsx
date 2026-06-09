@@ -154,10 +154,11 @@ const EMPTY_FILTERS: RadarFilters = {
   faixaValor: '',
   aderencia: '',
   urgente: null,
+  mostrarEncerrados: false,
 }
 
 function hasActiveFilters(f: RadarFilters): boolean {
-  return !!(f.modalidade || f.estado || f.faixaValor || f.aderencia || f.urgente)
+  return !!(f.modalidade || f.estado || f.faixaValor || f.aderencia || f.urgente || f.mostrarEncerrados)
 }
 
 // --- Inline select style ---
@@ -351,6 +352,30 @@ export function Dashboard({
             Urgentes
           </button>
 
+          {/* Mostrar encerrados toggle */}
+          <button
+            onClick={() => setFilters({ ...filters, mostrarEncerrados: !filters.mostrarEncerrados })}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 5,
+              border: filters.mostrarEncerrados
+                ? '1px solid var(--text-muted)'
+                : '1px solid var(--border-strong)',
+              borderRadius: 'var(--radius-md)',
+              padding: '5px 10px',
+              fontSize: 13,
+              fontWeight: 500,
+              color: filters.mostrarEncerrados ? 'var(--text-strong)' : 'var(--text-body)',
+              background: filters.mostrarEncerrados ? 'var(--bg-subtle)' : 'var(--surface)',
+              cursor: 'pointer',
+              fontFamily: 'var(--font-sans)',
+            }}
+          >
+            <Icon name="calendar" size={13} />
+            Mostrar encerrados
+          </button>
+
           {/* Clear filters */}
           {active && (
             <button
@@ -414,7 +439,11 @@ export function Dashboard({
           {list.length === 0 && (
             <div className="empty">
               <Icon name="radar" size={32} />
-              <span>{active ? 'Nenhum edital com esses filtros.' : 'Nenhum edital neste momento.'}</span>
+              <span>
+                {active
+                  ? 'Nenhum edital com esses filtros.'
+                  : 'Nenhuma oportunidade ativa encontrada. Ative "Mostrar encerrados" para ver o histórico.'}
+              </span>
             </div>
           )}
         </div>

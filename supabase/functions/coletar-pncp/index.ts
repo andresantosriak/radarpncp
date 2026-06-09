@@ -38,13 +38,23 @@ function pncpLink(controle: string): string {
   const m = /^(\d+)-\d+-(\d+)\/(\d+)$/.exec(controle || '')
   return m ? `https://pncp.gov.br/app/editais/${m[1]}/${m[3]}/${parseInt(m[2], 10)}` : 'https://pncp.gov.br/app/editais'
 }
+/** Check if deadline has already passed (date-only comparison, UTC). */
+function isEncerrado(prazoISO: string | null): boolean {
+  if (!prazoISO) return false
+  const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(prazoISO)
+  if (!m) return false
+  const deadline = `${m[1]}-${m[2]}-${m[3]}`
+  const today = new Date().toISOString().slice(0, 10)
+  return deadline < today
+}
+
 function isUrgente(prazoISO: string | null): boolean {
   if (!prazoISO) return false
   const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(prazoISO)
   const d = m ? new Date(+m[1], +m[2] - 1, +m[3]).getTime() : new Date(prazoISO).getTime()
   if (Number.isNaN(d)) return false
   const delta = d - Date.now()
-  return delta >= 0 && delta <= 7 * 86_400_000
+  return delta >= 0 && delta <= 5 * 86_400_000
 }
 
 function ymd(d: Date) {
@@ -194,6 +204,7 @@ Deno.serve(async (req) => {
       const orgao = e.orgaoEntidade ? titleCase(String((e.orgaoEntidade as Record<string, string>).razaoSocial ?? '')) : 'Órgão público'
       const uni = (e.unidadeOrgao ?? {}) as Record<string, string>
       const prazoISO = (e.dataEncerramentoProposta as string) ?? null
+      const encerrado = isEncerrado(prazoISO)
       rows.push({
         controle,
         objeto,
@@ -219,7 +230,8 @@ Deno.serve(async (req) => {
           score_heuristico: ad ? ad.score : null,
           score_semantico: sem,
           tags,
-          urgente: isUrgente(prazoISO),
+          urgente: !encerrado && isUrgente(prazoISO),
+          encerrado,
           embedding: emb,
           coletado_em: new Date().toISOString(),
         },

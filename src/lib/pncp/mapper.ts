@@ -63,6 +63,7 @@ export function pncpToEdital(raw: PncpContratacao): Edital | null {
     score: aderencia.score,
     status: aderencia.status,
     urgente: isUrgente(prazoISO),
+    encerrado: false,
     tags: aderencia.tags.map(termLabel),
     link: pncpEditalLink(controle),
     pncp: {

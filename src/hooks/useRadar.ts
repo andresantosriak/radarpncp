@@ -13,18 +13,34 @@ export interface RadarResult {
   source: RadarSource
 }
 
-async function loadRadar(signal?: AbortSignal): Promise<RadarResult> {
-  const editais = await fetchOportunidades(signal)
+export interface UseRadarOpts {
+  mostrarEncerrados?: boolean
+  orderByPrazo?: boolean
+}
+
+async function loadRadar(
+  opts: UseRadarOpts,
+  signal?: AbortSignal,
+): Promise<RadarResult> {
+  const editais = await fetchOportunidades({
+    signal,
+    mostrarEncerrados: opts.mostrarEncerrados,
+    orderByPrazo: opts.orderByPrazo,
+  })
   // banco vazio (coletor ainda não rodou) → demonstração
   if (editais.length === 0) return { editais: demoEditais, source: 'demo' }
   return { editais, source: 'live' }
 }
 
-export function useRadar() {
+export function useRadar(opts: UseRadarOpts = {}) {
+  const { mostrarEncerrados = false, orderByPrazo = false } = opts
   return useQuery<RadarResult>({
-    queryKey: ['radar'],
+    queryKey: ['radar', { mostrarEncerrados, orderByPrazo }],
     queryFn: ({ signal }) =>
-      loadRadar(signal).catch(() => ({ editais: demoEditais, source: 'demo' as const })),
+      loadRadar({ mostrarEncerrados, orderByPrazo }, signal).catch(() => ({
+        editais: demoEditais,
+        source: 'demo' as const,
+      })),
     staleTime: 5 * 60 * 1000,
     retry: false,
     refetchOnWindowFocus: false,

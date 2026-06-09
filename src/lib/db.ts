@@ -37,6 +37,7 @@ interface Row {
   score_semantico: number | null
   tags: string[] | null
   urgente: boolean | null
+  encerrado: boolean | null
   fonte: string | null
 }
 
@@ -83,6 +84,7 @@ function rowToEdital(r: Row): Edital {
     score,
     status,
     urgente: Boolean(r.urgente),
+    encerrado: Boolean(r.encerrado),
     tags,
     fonte: r.fonte || 'pncp',
     link: r.link || undefined,
@@ -126,10 +128,21 @@ export async function triggerColeta(): Promise<ColetaResult> {
   }
 }
 
-export async function fetchOportunidades(signal?: AbortSignal): Promise<Edital[]> {
+export interface FetchOportunidadesOpts {
+  signal?: AbortSignal
+  mostrarEncerrados?: boolean
+  orderByPrazo?: boolean
+}
+
+export async function fetchOportunidades(opts: FetchOportunidadesOpts = {}): Promise<Edital[]> {
   if (!URL || !ANON) throw new Error('Supabase não configurado')
+  const { signal, mostrarEncerrados = false, orderByPrazo = false } = opts
+  const order = orderByPrazo
+    ? 'data_encerramento.asc.nullslast'
+    : 'data_publicacao.desc.nullslast'
+  const encerradoFilter = mostrarEncerrados ? '' : '&encerrado=eq.false'
   const res = await fetch(
-    `${URL}/rest/v1/oportunidades?select=*&order=data_publicacao.desc.nullslast&limit=300`,
+    `${URL}/rest/v1/oportunidades?select=*&order=${order}${encerradoFilter}&limit=300`,
     { headers: { apikey: ANON, Authorization: `Bearer ${ANON}` }, signal },
   )
   if (!res.ok) throw new Error(`DB HTTP ${res.status}`)

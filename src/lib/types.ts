@@ -25,6 +25,8 @@ export interface Edital {
   score: number
   status: EditalStatus
   urgente: boolean
+  /** Whether the submission deadline has passed. */
+  encerrado: boolean
   recomendacao: string
   tags: string[]
   resumo: string
@@ -85,4 +87,5 @@ export interface RadarFilters {
   faixaValor: string
   aderencia: string
   urgente: boolean | null
+  mostrarEncerrados: boolean
 }
