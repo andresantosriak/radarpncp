@@ -5,6 +5,26 @@
 **Decisão:** NÃO baixar o threshold de score (50) — não há candidatos na zona de corte, baixar não capturaria TI real. O filtro está rejeitando corretamente. O gargalo é a montante: 77% dos excerpts nem são licitações, e licitações municipais de TI/IA são genuinamente raras no período. Alavancas reais: melhorar precisão da busca da API do QD / ampliar territórios e keywords / deixar o cron acumular meses. Confirma a hipótese "filtro correto + evento de baixa frequência", não "filtro apertado demais".
 **Escopo:** fonte Querido Diário (coletar-querido-diario).
 
+### [2026-06-09] Editais sem data de encerramento: manter como ativos
+**Contexto:** 52% dos editais coletados (26/50) não informam `dataEncerramentoProposta` na API do PNCP. Dispensas, credenciamentos e inexigibilidades frequentemente não publicam prazo ou têm prazo indeterminado.
+**Decisão:** Editais sem data de encerramento são mantidos como ativos (`encerrado = false`). O filtro de prazo aplica-se apenas a editais que informam data e cuja data já passou. Descartar editais sem prazo perderia mais da metade das oportunidades reais.
+**Escopo:** coletor `coletar-pncp` + tabela `oportunidades`.
+
+### [2026-06-09] Coluna `encerrado` (boolean) em vez de sobrescrever `status`
+**Contexto:** a coluna `status` armazena scores de aderência (`boa`, `forte`, `possivel`). Sobrescrevê-la com `encerrado` perderia a informação de relevância — são dimensões ortogonais (aderência vs ciclo de vida).
+**Decisão:** Adicionar coluna `encerrado boolean NOT NULL DEFAULT false` na tabela `oportunidades`. O status de aderência permanece intacto. O coletor seta `encerrado = true` para editais com prazo vencido; o frontend filtra por essa flag.
+**Escopo:** schema `oportunidades`, coletor, frontend.
+
+### [2026-06-09] Frontend: ocultar encerrados por padrão com toggle
+**Contexto:** exibir editais vencidos misturados com ativos confunde o usuário e corrói confiança no radar.
+**Decisão:** Dashboard oculta editais com `encerrado = true` por padrão. Toggle "Mostrar encerrados" permite visualizá-los com opacidade reduzida + badge "Encerrado". Ordenação padrão mantém `data_publicacao DESC`; opção adicional "Prazo (mais urgentes)" ordena por `data_encerramento ASC NULLS LAST`.
+**Escopo:** frontend (Dashboard, `src/lib/db.ts`).
+
+### [2026-06-09] Querido Diário: filtro de prazo não aplicável
+**Contexto:** o coletor `coletar-querido-diario` extrai `prazo` como texto livre via IA (ex: "30 dias", "até 15/07"). Não há campo estruturado de data de encerramento. Parsing de texto livre seria frágil e propenso a erros.
+**Decisão:** Nenhuma alteração no coletor Querido Diário para filtro de prazo. Documentado como "não aplicável — prazo não estruturado".
+**Escopo:** fonte Querido Diário (coletar-querido-diario).
+
 ### [2026-06-08] Chave OpenAI e service_role só no servidor
 **Contexto:** Vite empacota qualquer `VITE_*` no bundle do browser → segredo ficaria exposto a qualquer visitante.
 **Decisão:** `OPENAI_API_KEY` e a `service_role` vivem só na Edge Function (Deno). O frontend usa apenas `VITE_SUPABASE_URL` + a chave **anon** (pública por design).

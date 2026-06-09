@@ -128,6 +128,9 @@ export function Detail({ op, onBack, onGenerate, dismissed, onToggleDismiss }: D
         <Pill tone={band.tone} dot>
           {adherenceLabel}
         </Pill>
+        {op.encerrado && (
+          <Pill tone="danger">Prazo encerrado</Pill>
+        )}
         {op.urgente && (
           <Pill tone="gold" solid>
             Urgente

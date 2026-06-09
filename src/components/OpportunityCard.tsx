@@ -41,6 +41,7 @@ export function OpportunityCard({ op, onOpen }: OpportunityCardProps) {
         boxShadow: 'var(--shadow-sm)',
         cursor: 'pointer',
         transition: 'all var(--dur-base) var(--ease-out)',
+        opacity: op.encerrado ? 0.55 : 1,
       }}
       onMouseEnter={(e) => {
         e.currentTarget.style.boxShadow = 'var(--shadow-lg)'
@@ -59,6 +60,9 @@ export function OpportunityCard({ op, onOpen }: OpportunityCardProps) {
           <Pill tone={st} dot>
             {label}
           </Pill>
+          {op.encerrado && (
+            <Pill tone="danger">Encerrado</Pill>
+          )}
           {op.urgente && (
             <Pill tone="gold" solid>
               Urgente

@@ -53,6 +53,7 @@ export function App() {
     faixaValor: '',
     aderencia: '',
     urgente: null,
+    mostrarEncerrados: false,
   })
   const [opId, setOpId] = useState<string | null>(null)
   const [dialog, setDialog] = useState(false)
@@ -69,7 +70,10 @@ export function App() {
   const [dismissed, setDismissed] = useLocalState<string[]>('radar.dismissed', [])
   const [seenIds, setSeenIds] = useLocalState<string[]>('radar.seenIds', [])
 
-  const { data, isLoading, isFetching, refetch } = useRadar()
+  const { data, isLoading, isFetching, refetch } = useRadar({
+    mostrarEncerrados: radarFilters.mostrarEncerrados,
+    orderByPrazo: sort === 'prazo',
+  })
   const allEditais = data?.editais ?? []
   const source = data?.source ?? 'demo'
 
@@ -197,12 +201,12 @@ export function App() {
     if (id === 'urgentes') {
       // navigate to radar with urgente filter pre-set
       setRoute('radar')
-      setRadarFilters({ modalidade: '', estado: '', faixaValor: '', aderencia: '', urgente: true })
+      setRadarFilters({ modalidade: '', estado: '', faixaValor: '', aderencia: '', urgente: true, mostrarEncerrados: false })
     } else {
       setRoute(id)
       if (id === 'radar') {
         // reset filters when navigating back to radar
-        setRadarFilters({ modalidade: '', estado: '', faixaValor: '', aderencia: '', urgente: null })
+        setRadarFilters({ modalidade: '', estado: '', faixaValor: '', aderencia: '', urgente: null, mostrarEncerrados: false })
       }
     }
   }
