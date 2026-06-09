@@ -15,6 +15,11 @@ const STATUS_LABEL: Record<Edital['status'], [PillTone, string]> = {
   baixa: ['danger', 'Baixa aderência'],
 }
 
+const FONTE_LABEL: Record<string, [PillTone, string]> = {
+  pncp: ['info', 'PNCP'],
+  'querido-diario': ['gold', 'Diário Oficial'],
+}
+
 export interface OpportunityCardProps {
   op: Edital
   onOpen: (op: Edital) => void
@@ -60,6 +65,10 @@ export function OpportunityCard({ op, onOpen }: OpportunityCardProps) {
             </Pill>
           )}
           <Pill tone="neutral">{op.modalidade}</Pill>
+          {op.fonte && op.fonte !== 'pncp' && (() => {
+            const [ft, fl] = FONTE_LABEL[op.fonte] ?? ['neutral', op.fonte]
+            return <Pill tone={ft}>{fl}</Pill>
+          })()}
         </div>
         <div>
           <div
