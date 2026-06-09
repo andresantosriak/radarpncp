@@ -1,6 +1,7 @@
 /* Radar PNCP — Opportunity detail + análise. Mostra a análise heurística por
  * padrão e permite "Analisar com IA" (Edge Function lê o PDF do edital e usa
- * GPT-4o); quando a IA responde, a tela passa a refletir a análise do LLM. */
+ * GPT-4o-mini); quando a IA responde, a tela passa a refletir a análise do LLM.
+ * Análises já persistidas são carregadas automaticamente ao abrir a oportunidade. */
 import { useEffect, useState } from 'react'
 import type { Edital } from '../lib/types'
 import { Icon } from '../components/Icon'
@@ -9,7 +10,13 @@ import { Pill } from '../components/Pill'
 import { Gauge } from '../components/Gauge'
 import { KV } from '../components/KV'
 import { scoreBand } from '../components/score'
-import { analisarEditalIA, iaDisponivel, type AnaliseIA } from '../lib/ai'
+import type { PillTone } from '../components/Pill'
+import { analisarEditalIA, fetchAnaliseSalva, iaDisponivel, type AnaliseIA } from '../lib/ai'
+
+const FONTE_LABEL: Record<string, [PillTone, string]> = {
+  pncp: ['info', 'PNCP'],
+  'querido-diario': ['gold', 'Diário Oficial'],
+}
 
 type DetailTab = 'resumo' | 'docs' | 'custos'
 
@@ -39,20 +46,38 @@ function chanceColor(chance: string): string {
   return 'var(--danger-fg)'
 }
 
+function formatDate(iso: string | undefined): string {
+  if (!iso) return ''
+  try {
+    const d = new Date(iso)
+    return d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' })
+  } catch {
+    return ''
+  }
+}
+
 export function Detail({ op, onBack, onGenerate, dismissed, onToggleDismiss }: DetailProps) {
   const [tab, setTab] = useState<DetailTab>('resumo')
   const [ia, setIa] = useState<AnaliseIA | null>(null)
   const [iaLoading, setIaLoading] = useState(false)
   const [iaErr, setIaErr] = useState<string | null>(null)
 
-  // reseta a análise de IA ao trocar de oportunidade
+  // on opportunity change: reset then try to load saved analysis
   useEffect(() => {
     setIa(null)
     setIaErr(null)
     setTab('resumo')
+
+    if (!op.pncp || !iaDisponivel()) return
+
+    let cancelled = false
+    fetchAnaliseSalva(op.pncp.controle).then((saved) => {
+      if (!cancelled && saved) setIa(saved)
+    })
+    return () => { cancelled = true }
   }, [op.id])
 
-  // view = fatos do PNCP (op) + campos de análise sobrepostos pela IA quando houver
+  // view = raw PNCP data (op) + IA overlay when available
   const view: Edital = ia
     ? {
         ...op,
@@ -90,6 +115,8 @@ export function Detail({ op, onBack, onGenerate, dismissed, onToggleDismiss }: D
     }
   }
 
+  const analysisDate = ia?.analisadoEm ? formatDate(ia.analisadoEm) : ''
+
   return (
     <div className="page">
       <button className="icon-btn-ghost" onClick={onBack} style={{ marginBottom: 14, marginLeft: -8 }}>
@@ -107,6 +134,10 @@ export function Detail({ op, onBack, onGenerate, dismissed, onToggleDismiss }: D
           </Pill>
         )}
         <Pill tone="neutral">{op.modalidade}</Pill>
+        {op.fonte && (() => {
+          const [ft, fl] = FONTE_LABEL[op.fonte] ?? ['neutral', op.fonte]
+          return <Pill tone={ft}>{fl}</Pill>
+        })()}
         {ia && (
           <Pill tone="brand">
             <Icon name="sparkles" size={12} />
@@ -166,12 +197,29 @@ export function Detail({ op, onBack, onGenerate, dismissed, onToggleDismiss }: D
                   <Icon name="sparkles" />
                   {ia
                     ? `Análise da IA (${ia.modelo}${
-                        ia.lidoDoPdf ? ` · leu o edital, ${ia.textoChars} caracteres` : ' · pelo objeto, sem PDF legível'
+                        ia.lidoDoPdf ? ` · leu o edital, ${(ia.textoChars ?? 0).toLocaleString('pt-BR')} caracteres` : ' · pelo objeto, sem PDF legível'
                       })`
                     : 'Resumo da IA'}
                 </h3>
+                {analysisDate && (
+                  <p style={{ fontSize: 12, color: 'var(--text-subtle)', margin: '4px 0 8px' }}>
+                    Analisada por IA em {analysisDate}
+                  </p>
+                )}
                 <p className="prose">{view.resumo}</p>
               </div>
+
+              {/* Critério de julgamento */}
+              {ia?.criterioJulgamento && (
+                <div className="section">
+                  <h3 style={{ fontSize: 15 }}>
+                    <Icon name="scale" />
+                    Critério de julgamento
+                  </h3>
+                  <p className="prose">{ia.criterioJulgamento}</p>
+                </div>
+              )}
+
               <div className="section two-col">
                 <div>
                   <h3 style={{ fontSize: 15 }}>
@@ -210,6 +258,42 @@ export function Detail({ op, onBack, onGenerate, dismissed, onToggleDismiss }: D
                   </ul>
                 </div>
               </div>
+
+              {/* Prazos */}
+              {ia && ia.prazos.length > 0 && (
+                <div className="section">
+                  <h3 style={{ fontSize: 15 }}>
+                    <Icon name="calendar-clock" />
+                    Prazos e datas-chave
+                  </h3>
+                  <ul className="reason pos">
+                    {ia.prazos.map((p, i) => (
+                      <li key={i}>
+                        <Icon name="calendar" />
+                        {p}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {/* Requisitos técnicos */}
+              {ia && ia.requisitosTecnicos.length > 0 && (
+                <div className="section">
+                  <h3 style={{ fontSize: 15 }}>
+                    <Icon name="clipboard-list" />
+                    Requisitos técnicos de habilitação
+                  </h3>
+                  <ul className="reason neg">
+                    {ia.requisitosTecnicos.map((r, i) => (
+                      <li key={i}>
+                        <Icon name="file-check" />
+                        {r}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
             </div>
           )}
 
@@ -311,6 +395,7 @@ export function Detail({ op, onBack, onGenerate, dismissed, onToggleDismiss }: D
                   borderRadius: 'var(--radius-md)',
                   padding: '8px 12px',
                   cursor: iaLoading ? 'default' : 'pointer',
+                  width: '100%',
                 }}
               >
                 <Icon name="sparkles" size={14} />
@@ -384,7 +469,7 @@ export function Detail({ op, onBack, onGenerate, dismissed, onToggleDismiss }: D
                 iconLeft={<Icon name="external-link" size={16} />}
                 style={{ width: '100%' }}
               >
-                Ver no PNCP
+                {op.fonte === 'querido-diario' ? 'Ver diário oficial' : 'Ver no PNCP'}
               </Button>
             ) : (
               <Button
@@ -392,7 +477,7 @@ export function Detail({ op, onBack, onGenerate, dismissed, onToggleDismiss }: D
                 iconLeft={<Icon name="external-link" size={16} />}
                 style={{ width: '100%', opacity: 0.5, cursor: 'not-allowed' }}
               >
-                Ver no PNCP (demonstração)
+                {op.fonte === 'querido-diario' ? 'Ver diário oficial' : 'Ver no PNCP'} (demonstração)
               </Button>
             )}
             <Button

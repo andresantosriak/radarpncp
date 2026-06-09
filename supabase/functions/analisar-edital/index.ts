@@ -1,6 +1,6 @@
 // Radar PNCP — Edge Function: analisar-edital
-// Lê o PDF do edital no PNCP, extrai o texto, analisa com LLM (GPT-4o) cruzando
-// com o portfólio da AI Solution, persiste e devolve a análise estruturada.
+// Lê o PDF do edital no PNCP, extrai o texto, analisa com LLM (GPT-4o-mini)
+// cruzando com o portfólio da AI Solution, persiste e devolve a análise.
 //
 // Segredos (server-side apenas): OPENAI_API_KEY (set via `supabase secrets`),
 // SUPABASE_URL + SUPABASE_SERVICE_ROLE_KEY (injetados pela plataforma).
@@ -13,6 +13,13 @@ const OPENAI_MODEL = Deno.env.get('OPENAI_MODEL') ?? 'gpt-4o-mini'
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL') ?? ''
 const SERVICE_KEY =
   Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? Deno.env.get('SUPABASE_SECRET_KEY') ?? ''
+
+/** Max total chars sent to the LLM (gpt-4o-mini has 128k context). */
+const MAX_TEXT_CHARS = 70_000
+/** Max docs to download from PNCP. */
+const MAX_DOCS = 8
+/** Timeout per individual PDF download (ms). */
+const DOC_FETCH_TIMEOUT_MS = 20_000
 
 const CORS = {
   'Access-Control-Allow-Origin': '*',
@@ -37,11 +44,11 @@ const SCHEMA = `Responda APENAS um JSON (pt-BR, sentence-case, sem emoji, númer
 {
  "score": number 0-100,
  "recomendacao": "Participar — ... | Analisar — ... | Descartar — ..." (1 frase),
- "resumo": "2-4 frases do que o órgão quer e do encaixe com a AI Solution",
- "porQueCombina": ["..."],            // 0-5 itens
- "porQueNao": ["..."],                // 1-4 itens (riscos/atenção)
- "documentos": ["..."],               // certidões/atestados exigidos pelo edital
- "custos": [{"item":"...","valor":"R$ ..."}],   // composição
+ "resumo": "4-8 frases detalhando o que o órgão quer, o escopo do serviço, prazos relevantes e o encaixe com a AI Solution",
+ "porQueCombina": ["..."],            // 0-8 itens detalhados
+ "porQueNao": ["..."],                // 1-6 itens (riscos/atenção) detalhados
+ "documentos": ["..."],               // TODAS as certidões, atestados, declarações e habilitações exigidos no edital
+ "custos": [{"item":"...","valor":"R$ ..."}],   // composição detalhada
  "custoTotal": "R$ ...",
  "propostaMin": "R$ ...",             // mínimo saudável
  "propostaIdeal": "R$ X – Y",         // faixa recomendada
@@ -49,7 +56,10 @@ const SCHEMA = `Responda APENAS um JSON (pt-BR, sentence-case, sem emoji, númer
  "risco": "Baixo|Médio|Alto",
  "concorrencia": "Baixa|Média|Alta",
  "burocracia": "Baixa|Média|Alta",
- "chance": "Alta|Média|Baixa"
+ "chance": "Alta|Média|Baixa",
+ "requisitosTecnicos": ["..."],       // requisitos técnicos de habilitação e qualificação exigidos (atestados, certificações, equipe mínima, etc.)
+ "prazos": ["..."],                   // datas-chave: abertura, entrega de propostas, vigência, execução, etc.
+ "criterioJulgamento": "..."          // critério de julgamento (menor preço, técnica e preço, melhor técnica, maior desconto, etc.)
 }`
 
 function statusFromScore(s: number): string {
@@ -74,22 +84,22 @@ async function pdfToText(buf: Uint8Array): Promise<string> {
   }
 }
 
-// Extrai texto de um arquivo do PNCP: PDF direto, ou ZIP contendo PDF(s).
-async function extractFromBuffer(buf: Uint8Array): Promise<string> {
+// Extracts text from a PNCP file: direct PDF, or ZIP containing PDFs.
+// Returns ALL text from all PDFs inside a ZIP (concatenated), not just the biggest.
+async function extractFromBuffer(buf: Uint8Array, title?: string): Promise<string> {
   if (isPdf(buf)) return pdfToText(buf)
   if (isZip(buf)) {
     try {
       const entries = unzipSync(buf)
-      let best = ''
+      const parts: string[] = []
       for (const name of Object.keys(entries)) {
         if (!/\.pdf$/i.test(name)) continue
         const inner = entries[name]
         if (!isPdf(inner)) continue
         const t = await pdfToText(inner)
-        if (t.length > best.length) best = t
-        if (best.length > 1500) break
+        if (t) parts.push(t)
       }
-      return best
+      return parts.join('\n\n')
     } catch {
       return ''
     }
@@ -103,29 +113,49 @@ async function fetchPdfText(cnpj: string, ano: number | string, seq: number | st
   if (!res.ok) return { text: '', fonte: '' }
   const arquivos = (await res.json()) as Array<Record<string, string>>
   if (!Array.isArray(arquivos) || arquivos.length === 0) return { text: '', fonte: '' }
-  // prioriza edital/termo de referência/projeto básico; tenta até 5 arquivos
+
+  // prioritize edital/termo de referência/projeto básico; take up to MAX_DOCS
   const rank = (a: Record<string, string>) => {
     const s = `${a.titulo ?? ''} ${a.tipoDocumentoNome ?? ''}`
     if (/edital|refer[eê]ncia|projeto b[aá]sico|termo de refer/i.test(s)) return 0
     if (/dispensa|termo|anexo|contrato/i.test(s)) return 1
     return 2
   }
-  const cands = [...arquivos].sort((x, y) => rank(x) - rank(y)).slice(0, 5)
-  let best = { text: '', fonte: '' }
+  const cands = [...arquivos].sort((x, y) => rank(x) - rank(y)).slice(0, MAX_DOCS)
+
+  const parts: { title: string; text: string; url: string }[] = []
+  let totalChars = 0
+
   for (const a of cands) {
     if (!a.url) continue
+    if (totalChars >= MAX_TEXT_CHARS) break
     try {
-      const doc = await fetch(a.url)
+      const doc = await fetch(a.url, { signal: AbortSignal.timeout(DOC_FETCH_TIMEOUT_MS) })
       if (!doc.ok) continue
       const buf = new Uint8Array(await doc.arrayBuffer())
-      const t = await extractFromBuffer(buf)
-      if (t.length > best.text.length) best = { text: t.slice(0, 24000), fonte: a.url }
-      if (best.text.length > 1500) break
+      const docTitle = a.titulo || a.tipoDocumentoNome || 'Documento'
+      const t = await extractFromBuffer(buf, docTitle)
+      if (!t) continue
+      parts.push({ title: docTitle, text: t, url: a.url })
+      totalChars += t.length
     } catch {
-      /* tenta o próximo arquivo */
+      /* timeout or network error — try next doc */
     }
   }
-  return best
+
+  if (parts.length === 0) return { text: '', fonte: '' }
+
+  // concatenate with document separators, truncate to MAX_TEXT_CHARS total
+  let combined = ''
+  const fonte = parts[0].url
+  for (const p of parts) {
+    const header = `\n\n===== ${p.title} =====\n\n`
+    const remaining = MAX_TEXT_CHARS - combined.length
+    if (remaining <= 0) break
+    combined += header + p.text.slice(0, remaining - header.length)
+  }
+
+  return { text: combined.trim(), fonte }
 }
 
 async function analisarComIA(edital: Record<string, unknown>, pdfText: string) {
@@ -136,7 +166,7 @@ Modalidade: ${edital.modalidade ?? ''}
 Valor estimado: ${edital.valorEstimado ? `R$ ${edital.valorEstimado}` : 'não informado'}
 Objeto: ${edital.objeto ?? edital.titulo ?? ''}
 
-TEXTO DO EDITAL (extraído do PDF; pode estar truncado):
+TEXTO DO EDITAL (extraído de PDFs do PNCP; leia com atenção — pode conter múltiplos documentos):
 ${pdfText || '(PDF sem texto extraível — analise pelo objeto e metadados acima)'}`
 
   const res = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -176,6 +206,9 @@ ${pdfText || '(PDF sem texto extraível — analise pelo objeto e metadados acim
     concorrencia: asStr(p.concorrencia),
     burocracia: asStr(p.burocracia),
     chance: asStr(p.chance),
+    requisitosTecnicos: asArray(p.requisitosTecnicos).map((x) => String(x)),
+    prazos: asArray(p.prazos).map((x) => String(x)),
+    criterioJulgamento: asStr(p.criterioJulgamento, ''),
     modelo: OPENAI_MODEL,
   }
 }
@@ -194,7 +227,7 @@ Deno.serve(async (req) => {
 
     const supabase = SUPABASE_URL && SERVICE_KEY ? createClient(SUPABASE_URL, SERVICE_KEY) : null
 
-    // cache: devolve análise existente (a menos que body.force === true)
+    // cache: return existing analysis (unless body.force === true)
     if (supabase && !body.force) {
       const { data: cached } = await supabase
         .from('analises_ia')
@@ -221,6 +254,9 @@ Deno.serve(async (req) => {
           concorrencia: cached.concorrencia,
           burocracia: cached.burocracia,
           chance: cached.chance,
+          requisitosTecnicos: cached.requisitos_tecnicos ?? [],
+          prazos: cached.prazos ?? [],
+          criterioJulgamento: cached.criterio_julgamento ?? '',
           modelo: cached.modelo,
           fontePdf: cached.fonte_pdf,
           textoChars: cached.texto_chars,
@@ -279,12 +315,21 @@ Deno.serve(async (req) => {
         concorrencia: analysis.concorrencia,
         burocracia: analysis.burocracia,
         chance: analysis.chance,
+        requisitos_tecnicos: analysis.requisitosTecnicos,
+        prazos: analysis.prazos,
+        criterio_julgamento: analysis.criterioJulgamento,
         fonte_pdf: fonte,
         texto_chars: pdfText.length,
       })
     }
 
-    return json({ ...analysis, fontePdf: fonte, textoChars: pdfText.length, lidoDoPdf: pdfText.length > 200, cache: false })
+    return json({
+      ...analysis,
+      fontePdf: fonte,
+      textoChars: pdfText.length,
+      lidoDoPdf: pdfText.length > 200,
+      cache: false,
+    })
   } catch (e) {
     return json({ error: String((e as Error)?.message ?? e) }, 500)
   }

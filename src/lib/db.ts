@@ -37,6 +37,7 @@ interface Row {
   score_semantico: number | null
   tags: string[] | null
   urgente: boolean | null
+  fonte: string | null
 }
 
 function rowToEdital(r: Row): Edital {
@@ -83,6 +84,7 @@ function rowToEdital(r: Row): Edital {
     status,
     urgente: Boolean(r.urgente),
     tags,
+    fonte: r.fonte || 'pncp',
     link: r.link || undefined,
     pncp:
       r.cnpj && r.ano && r.sequencial

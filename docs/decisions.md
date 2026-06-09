@@ -1,5 +1,10 @@
 # Decisões — Radar PNCP
 
+### [2026-06-09] Filtro do Querido Diário está calibrado; gargalo é cobertura, não threshold
+**Contexto:** o coletor QD trazia 0 capturas. Modo diagnóstico (tabela `diagnostico_coleta`) deu visibilidade. Amostra de 30 diários (90 dias): 23 `nao_e_licitacao` (excerpts genéricos do diário, score 0), 7 `nao_relevante` (licitações reais de outras áreas: medicamentos, uniformes, material didático, leitor biométrico). Distribuição de score: máximo 30, **zero na faixa 40-49**, nada perto do corte de 50.
+**Decisão:** NÃO baixar o threshold de score (50) — não há candidatos na zona de corte, baixar não capturaria TI real. O filtro está rejeitando corretamente. O gargalo é a montante: 77% dos excerpts nem são licitações, e licitações municipais de TI/IA são genuinamente raras no período. Alavancas reais: melhorar precisão da busca da API do QD / ampliar territórios e keywords / deixar o cron acumular meses. Confirma a hipótese "filtro correto + evento de baixa frequência", não "filtro apertado demais".
+**Escopo:** fonte Querido Diário (coletar-querido-diario).
+
 ### [2026-06-08] Chave OpenAI e service_role só no servidor
 **Contexto:** Vite empacota qualquer `VITE_*` no bundle do browser → segredo ficaria exposto a qualquer visitante.
 **Decisão:** `OPENAI_API_KEY` e a `service_role` vivem só na Edge Function (Deno). O frontend usa apenas `VITE_SUPABASE_URL` + a chave **anon** (pública por design).

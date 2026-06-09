@@ -44,6 +44,8 @@ export interface Edital {
   publicadoISO?: string
   /** Data de encerramento ISO (yyyy-mm-dd) — para ordenação por prazo. */
   prazoISO?: string
+  /** Origem do edital: 'pncp' (default) ou 'querido-diario'. */
+  fonte?: string
   /** Link para o edital no portal do PNCP (presente em oportunidades ao vivo). */
   link?: string
   /** Identificadores PNCP para análise por IA (só em oportunidades ao vivo). */
